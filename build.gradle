@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'net.aeronica.libs.mml'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.antlr:antlr4-runtime:4.7.2' // use ANTLR version 4
+    compile 'org.apache.logging.log4j:log4j-core:2.11.2'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
