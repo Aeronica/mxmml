@@ -1,4 +1,4 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
 import org.antlr.v4.runtime.RecognitionException;
 

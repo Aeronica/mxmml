@@ -1,10 +1,10 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.aeronica.libs.mml.core.MMLUtil.MML_LOGGER;
+import static net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER;
 
 public enum TestData {
     MML0(0, "Mario", "MML@i1537v13r4>e32r16.d+32r16.d16c16r8.<<g8r4r16>>e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8r2<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8,v10r1r4.e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r8.r32e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r16.c2.,v10r1o2g8.&g32r32>c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8r1r1c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8;"),

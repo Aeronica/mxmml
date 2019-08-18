@@ -1,4 +1,4 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
 import javax.sound.midi.*;
 import java.nio.ByteBuffer;
@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static net.aeronica.libs.mml.core.MMLUtil.*;
+import static net.aeronica.libs.mml.oldcore.MMLUtil.*;
 
 public class MMLToMIDI extends MMLTransformBase
 {

@@ -1,9 +1,9 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
-import net.aeronica.libs.mml.core.MMLParser.AnoteContext;
-import net.aeronica.libs.mml.core.MMLParser.BandContext;
-import net.aeronica.libs.mml.core.MMLParser.InstContext;
-import net.aeronica.libs.mml.core.MMLParser.LenContext;
+import net.aeronica.libs.mml.oldcore.MMLParser.AnoteContext;
+import net.aeronica.libs.mml.oldcore.MMLParser.BandContext;
+import net.aeronica.libs.mml.oldcore.MMLParser.InstContext;
+import net.aeronica.libs.mml.oldcore.MMLParser.LenContext;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.apache.logging.log4j.LogManager;

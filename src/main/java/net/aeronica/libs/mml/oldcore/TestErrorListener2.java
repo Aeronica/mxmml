@@ -1,8 +1,8 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
 import org.antlr.v4.runtime.*;
 
-import static net.aeronica.libs.mml.core.MMLUtil.MML_LOGGER;
+import static net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER;
 
 public class TestErrorListener2
 {

@@ -1,4 +1,4 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.oldcore;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
