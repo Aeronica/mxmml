@@ -1,9 +1,12 @@
 package net.aeronica.libs.mml.core;
 
 import javax.sound.midi.*;
+import java.net.URL;
 
 public class PlayMIDI implements MetaEventListener
 {
+    private static URL urlSoundFont = TestAntlr.class.getResource("/mxtune_v2.sf2");
+    private Soundbank soundbank;
     private Sequencer sequencer;
     private Synthesizer synthesizer;
 
@@ -76,8 +79,16 @@ public class PlayMIDI implements MetaEventListener
     {
         try
         {
+            soundbank = MidiSystem.getSoundbank(urlSoundFont);
             synthesizer = MidiSystem.getSynthesizer();
+
             synthesizer.open();
+
+            Soundbank defaultSoundBank = synthesizer.getDefaultSoundbank();
+            if (defaultSoundBank != null)
+                synthesizer.unloadAllInstruments(defaultSoundBank);
+
+            synthesizer.loadAllInstruments(soundbank);
 
             sequencer = MidiSystem.getSequencer();
             sequencer.addMetaEventListener(this);
