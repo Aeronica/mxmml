@@ -51,6 +51,10 @@ public class MMLNavigator
 
     // Data extraction support methods
 
+    /**
+     * Primitive integer bounded to 5 significant digits. -1 as invalid data.
+     * @return -1 for invalid, 0<->99999
+     */
     public int asInt()
     {
         byte numberType = this.elementBuffer.type[this.elementIndex];
@@ -60,10 +64,14 @@ public class MMLNavigator
             {
                 String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex]);
                 int length = number.length();
-                if (length >= 1 && length <= 5)
-                    return Integer.valueOf(number);
+                try {
+                    if (length >= 1 && length <= 5)
+                        return Integer.valueOf(number);
+                } catch (NumberFormatException e) {
+                    return -1;
+                }
             }
         }
-        return 0;
+        return -1;
     }
 }
