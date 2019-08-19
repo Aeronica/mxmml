@@ -16,7 +16,7 @@ public class MMLNavigatorTest
     public void testWithParser()
     {
         DataCharBuffer dataBuffer = new DataCharBuffer();
-        dataBuffer.data = "MML@V10C+;".toCharArray();
+        dataBuffer.data = "MML@V10T240C+;".toCharArray();
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer tokenBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -25,7 +25,7 @@ public class MMLNavigatorTest
         MMLParser parser = new MMLParser(tokenBuffer, elementBuffer);
 
         parser.parse(dataBuffer);
-        assertEquals(6, elementBuffer.count);
+        assertEquals(8, elementBuffer.count);
 
 
         assertsOnNavigator(dataBuffer, elementBuffer);
@@ -47,6 +47,17 @@ public class MMLNavigatorTest
 
         assertEquals(ElementTypes.MML_NUMBER, navigator.type());
         assertEquals(10, navigator.asInt());
+
+        assertTrue(navigator.hasNext());
+        navigator.next();
+
+        assertEquals(ElementTypes.MML_CMD, navigator.type());
+
+        assertTrue(navigator.hasNext());
+        navigator.next();
+
+        assertEquals(ElementTypes.MML_NUMBER, navigator.type());
+        assertEquals(240, navigator.asInt());
 
         assertTrue(navigator.hasNext());
         navigator.next();
