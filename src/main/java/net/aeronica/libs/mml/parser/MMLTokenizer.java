@@ -93,8 +93,8 @@ public class MMLTokenizer
             case 'M': { if(parseMMLBegin()) { this.tokenBuffer.type[this.tokenIndex] = TokenTypes.MML_BEGIN;} } break;
             case ',': { /*this.tokenLength = 1;*/ this.tokenBuffer.type[this.tokenIndex] = TokenTypes.MML_CHORD; } break;
             case ';': { /*this.tokenLength = 1;*/ this.tokenBuffer.type[this.tokenIndex] = TokenTypes.MML_END; } break;
-            default:
         }
+        this.tokenBuffer.length[this.tokenIndex] = this.tokenLength;
     }
 
     private void parseNumberToken()
@@ -114,7 +114,7 @@ public class MMLTokenizer
                 case '6':
                 case '7':
                 case '8':
-                case '9':
+                case '9': { this.tokenLength++; } break;
 
                 default:  { isEndOfNumberFound = true; }
             }
