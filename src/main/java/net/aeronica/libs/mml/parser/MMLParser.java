@@ -21,7 +21,7 @@ public class MMLParser
     public void parse(DataCharBuffer dataBuffer) {
         this.elementIndex  = 0;
 
-        this.mmlTokenizer.reinit(dataBuffer, this.tokenBuffer);
+        this.mmlTokenizer.reInit(dataBuffer, this.tokenBuffer);
 
         parseObject(this.mmlTokenizer);
 

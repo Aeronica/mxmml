@@ -21,7 +21,7 @@ public class MMLTokenizer
         this.tokenBuffer = tokenBuffer;
     }
 
-    public void reinit(DataCharBuffer dataBuffer, IndexBuffer tokenBuffer) {
+    public void reInit(DataCharBuffer dataBuffer, IndexBuffer tokenBuffer) {
         this.dataBuffer  = dataBuffer;
         this.tokenBuffer = tokenBuffer;
         this.tokenIndex  = 0;
