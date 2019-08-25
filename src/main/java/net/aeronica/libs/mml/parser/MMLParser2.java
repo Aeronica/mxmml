@@ -5,20 +5,14 @@ import net.aeronica.libs.mml.core.IndexBuffer;
 
 public class MMLParser2
 {
-    private static final byte NOP = 0;
-
-    private byte[] stateStack   = new byte[256];
-    private int    stateIndex   = 0;
     private int    position     = 0;
     private int    elementIndex = 0;
 
-    @SuppressWarnings("ncomplete-switch")
+    @SuppressWarnings("incomplete-switch")
     public void parse(DataCharBuffer buffer, IndexBuffer elementBuffer)
     {
         this.position = 0;
         this.elementIndex = 0;
-        this.stateIndex = 0;
-        this.stateStack[stateIndex] = NOP;
 
         for(; position < buffer.length; position++)
         {
@@ -90,7 +84,7 @@ public class MMLParser2
         elementBuffer.count = this.elementIndex;
     }
 
-    private boolean parseMMLBegin(DataCharBuffer buffer, IndexBuffer elementBuffer)
+    private void parseMMLBegin(DataCharBuffer buffer, IndexBuffer elementBuffer)
     {
         if (
                 buffer.data[this.position + 1] == 'M' &&
@@ -99,9 +93,7 @@ public class MMLParser2
         {
             this.position += 3; // +4, but the outer for-loop will add 1 too
             setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, 4);
-            return true;
         }
-        return false;
     }
 
     private void parseNumberToken(DataCharBuffer buffer, IndexBuffer elementBuffer) {
@@ -128,30 +120,13 @@ public class MMLParser2
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void setState(byte state){
-        this.stateStack[this.stateIndex] = state;
-    }
-
-    private void pushState(byte state){
-        this.stateStack[this.stateIndex] = state;
-        this.stateIndex++;
-    }
-    private void popState() {
-        this.stateIndex--;
-    }
-
-    private final void setElementDataNoLength(IndexBuffer elementBuffer, int index, byte type, int position) {
-        elementBuffer.type    [index] = type;
-        elementBuffer.position[index] = position;
-    }
-
-    private final void setElementDataLength1(IndexBuffer elementBuffer, int index, byte type, int position) {
+    private void setElementDataLength1(IndexBuffer elementBuffer, int index, byte type, int position) {
         elementBuffer.type    [index] = type;
         elementBuffer.position[index] = position;
         elementBuffer.length  [index] = 1;
     }
 
-    private final void setElementData(IndexBuffer elementBuffer, int index, byte type, int position, int length) {
+    private void setElementData(IndexBuffer elementBuffer, int index, byte type, int position, int length) {
         elementBuffer.type    [index] = type;
         elementBuffer.position[index] = position;
         elementBuffer.length  [index] = length;
