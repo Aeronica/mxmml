@@ -4,8 +4,7 @@ import net.aeronica.libs.mml.core.DataCharBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.parser.ElementTypes;
 import net.aeronica.libs.mml.parser.MMLNavigator;
-import net.aeronica.libs.mml.parser.MMLParser1;
-import net.aeronica.libs.mml.parser.MMLParser2;
+import net.aeronica.libs.mml.parser.MMLParser;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -15,26 +14,7 @@ public class MMLNavigatorTest
 {
 
     @Test
-    public void testWithParser1()
-    {
-        DataCharBuffer dataBuffer = new DataCharBuffer();
-        dataBuffer.data = "MML@V10T240C+;".toCharArray();
-        dataBuffer.length = dataBuffer.data.length;
-
-        IndexBuffer tokenBuffer = new IndexBuffer(dataBuffer.data.length, true);
-        IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
-
-        MMLParser1 parser = new MMLParser1(tokenBuffer, elementBuffer);
-
-        parser.parse(dataBuffer);
-        assertEquals(8, elementBuffer.count);
-
-
-        assertsOnNavigator(dataBuffer, elementBuffer);
-    }
-
-    @Test
-    public void testWithParser2()
+    public void testWithParser()
     {
         DataCharBuffer dataBuffer = new DataCharBuffer();
         dataBuffer.data = "MML@V10T240C+;".toCharArray();
@@ -42,7 +22,7 @@ public class MMLNavigatorTest
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
 
-        MMLParser2 parser = new MMLParser2();
+        MMLParser parser = new MMLParser();
 
         parser.parse(dataBuffer, elementBuffer);
         assertEquals(8, elementBuffer.count);
@@ -59,7 +39,7 @@ public class MMLNavigatorTest
         assertTrue(navigator.hasNext());
         navigator.next();
 
-        assertEquals(ElementTypes.MML_CMD, navigator.type());
+        assertEquals(ElementTypes.MML_VOLUME, navigator.type());
 
         assertTrue(navigator.hasNext());
         navigator.next();
@@ -70,7 +50,7 @@ public class MMLNavigatorTest
         assertTrue(navigator.hasNext());
         navigator.next();
 
-        assertEquals(ElementTypes.MML_CMD, navigator.type());
+        assertEquals(ElementTypes.MML_TEMPO, navigator.type());
 
         assertTrue(navigator.hasNext());
         navigator.next();
@@ -86,7 +66,7 @@ public class MMLNavigatorTest
         assertTrue(navigator.hasNext());
         navigator.next();
 
-        assertEquals(ElementTypes.MML_ACC, navigator.type());
+        assertEquals(ElementTypes.MML_SHARP, navigator.type());
 
         assertTrue(navigator.hasNext());
         navigator.next();
