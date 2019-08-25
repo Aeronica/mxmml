@@ -31,7 +31,7 @@ public class TestAntlr
 
     public static void main(String[] args) throws Exception
     {
-        MMLUtil.MML_LOGGER.info("Test Begin\n");
+        MMLUtil.MML_LOGGER.info("Test Begin");
         InputStream is = init();
         PlayMIDI player = new PlayMIDI();
         MMLToMIDI mmlTrans = new MMLToMIDI();
@@ -59,6 +59,6 @@ public class TestAntlr
 //        MidiSystem.write(mmlTrans.getSequence(),1,f);
 
 
-        MMLUtil.MML_LOGGER.info("\n\nTest End");
+        MMLUtil.MML_LOGGER.info("Test End");
     }
 }
