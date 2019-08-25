@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class MMLNavigatorTest
 {
 
+    @Test
     public void testWithParser1()
     {
         DataCharBuffer dataBuffer = new DataCharBuffer();
