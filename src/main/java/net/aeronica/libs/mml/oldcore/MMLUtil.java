@@ -1,5 +1,6 @@
 package net.aeronica.libs.mml.oldcore;
 
+import net.aeronica.libs.mml.core.ParserException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,10 +18,24 @@ public enum MMLUtil
     /* int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
     private static final int[] DOE_RE_MI = {50, 9, 11, 0, 2, 4, 5, 7};
 
-    public static int getMIDINote(int rawNote, int mmlOctave)
+    /**
+     * Convert character and octave to a MIDI note value
+     * @param rawNote US ASCII character value
+     * @param mmlOctave in the range of 0-8
+     * @return MIDI note
+     * @throws ParserException
+     */
+    public static int getMIDINote(int rawNote, int mmlOctave) throws ParserException
     {
-        /* Convert ASCII UPPER CASE Note value to integer: A=1, G=7 */
-        int doreNote = rawNote - 64;
+        int doreNote;
+        /* Convert Note value to integer: aA=1, gG=7 */
+        if (rawNote >=65 && rawNote <= 71)
+            doreNote = rawNote - 64;
+        else if (rawNote >= 97 && rawNote <=103)
+            doreNote = rawNote - 96;
+        else
+            throw new ParserException("Invalid character [abcdefgABCDEFG] -> " + String.format("%c", (char) rawNote));
+
         /* Get start of the MML Octave */
         int octave = (mmlOctave * 12) + 12;
         /* combine the octave and reordered note to get the MIDI note value */
