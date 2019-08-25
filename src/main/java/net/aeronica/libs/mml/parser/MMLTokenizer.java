@@ -33,6 +33,7 @@ public class MMLTokenizer
         return (this.dataPosition + this.tokenLength) < this.dataBuffer.length ;
     }
 
+    @SuppressWarnings("ncomplete-switch")
     public void parseToken()
     {
         skipWhiteSpace();

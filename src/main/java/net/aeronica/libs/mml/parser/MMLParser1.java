@@ -4,14 +4,14 @@ import net.aeronica.libs.mml.core.DataCharBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.core.ParserException;
 
-public class MMLParser
+public class MMLParser1
 {
     private IndexBuffer tokenBuffer   = null;
     private IndexBuffer   elementBuffer = null;
     private int           elementIndex  = 0;
     private MMLTokenizer mmlTokenizer = null;
 
-    public MMLParser(IndexBuffer tokenBuffer, IndexBuffer elementBuffer) {
+    public MMLParser1(IndexBuffer tokenBuffer, IndexBuffer elementBuffer) {
         this.tokenBuffer   = tokenBuffer;
         this.mmlTokenizer = new MMLTokenizer(this.tokenBuffer);
         this.elementBuffer = elementBuffer;
