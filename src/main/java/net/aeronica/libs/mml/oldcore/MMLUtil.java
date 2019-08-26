@@ -34,7 +34,7 @@ public enum MMLUtil
         else if (rawNote >= 97 && rawNote <=103)
             doreNote = rawNote - 96;
         else
-            throw new ParserException("Invalid character [abcdefgABCDEFG] -> " + String.format("%c", (char) rawNote));
+            throw new ParserException("Invalid character not in [abcdefgABCDEFG] -> " + String.format("%c", (char) rawNote));
 
         /* Get start of the MML Octave */
         int octave = (mmlOctave * 12) + 12;
