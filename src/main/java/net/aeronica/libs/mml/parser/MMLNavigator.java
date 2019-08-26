@@ -74,4 +74,11 @@ public class MMLNavigator
         }
         return -1;
     }
+
+    public char asChar()
+    {
+        if (ElementTypes.MML_NOTE == type())
+            return this.buffer.data[this.elementBuffer.position[this.elementIndex]];
+        return 0;
+    }
 }
