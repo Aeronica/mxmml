@@ -260,7 +260,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         boolean dot = partState.isDotted();
         boolean tied = partState.isTied();
 
-        int rawNote = ctx.NOTE().getText().charAt(0);
+        char rawNote = ctx.NOTE().getText().charAt(0);
         int midiNote = MMLUtil.getMIDINote(rawNote, partState.getOctave());
         if (ctx.ACC() != null)
         {

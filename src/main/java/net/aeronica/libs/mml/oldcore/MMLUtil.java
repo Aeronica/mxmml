@@ -25,7 +25,7 @@ public enum MMLUtil
      * @return MIDI note
      * @throws ParserException
      */
-    public static int getMIDINote(int rawNote, int mmlOctave) throws ParserException
+    public static int getMIDINote(char rawNote, int mmlOctave) throws ParserException
     {
         int doreNote;
         /* Convert Note value to integer: aA=1, gG=7 */
@@ -42,7 +42,7 @@ public enum MMLUtil
         return octave + DOE_RE_MI[doreNote];
     }
 
-    public static int getMIDINote(int rawNote, int mmlOctave, boolean rest)
+    public static int getMIDINote(char rawNote, int mmlOctave, boolean rest)
     {
         int midiNote = getMIDINote(rawNote, mmlOctave);
         return midiNote + (rest ? 128 : 0);
