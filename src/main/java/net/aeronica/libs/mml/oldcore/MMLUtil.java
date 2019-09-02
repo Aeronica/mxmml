@@ -58,7 +58,9 @@ public enum MMLUtil
         }
         return midiNoteClamped;
     }
-    
+
+    public static int clamp(int min, int max, int value) {return Math.max(Math.min(max, value), min);}
+
     /**
      * Unpacks the packedPreset and returns the {@link Patch}<br/>
      * Note that his is not always going to return what you might expect. Tread carefully!

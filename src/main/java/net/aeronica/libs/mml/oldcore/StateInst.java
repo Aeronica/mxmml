@@ -1,5 +1,7 @@
 package net.aeronica.libs.mml.oldcore;
 
+import static net.aeronica.libs.mml.oldcore.MMLUtil.clamp;
+
 public class StateInst
 {
     private int tempo;
@@ -40,7 +42,7 @@ public class StateInst
     public void setInstrument(int gmInstrument)
     {
         // Packed preset number 0-16,511 - bank 0-128, preset 0-127, zero based
-        this.instrument = (getMinMax(0, 0x407F, gmInstrument));
+        this.instrument = (clamp(0, 0x407F, gmInstrument));
     }
 
     void collectDurationTicks(long durationTicks)
@@ -56,11 +58,9 @@ public class StateInst
         return "\n@CommonState: tempo=" + tempo + ", instrument=" + instrument;
     }
 
-    private int getMinMax(int min, int max, int value) {return Math.max(Math.min(max, value), min);}
-
     void collectVolume(int volumeIn)
     {
-        int volume = getMinMax(0, 127, volumeIn);
+        int volume = clamp(0, 127, volumeIn);
         if (volume > 15)
             volumeArcheAge = true;
         this.minVolume = Math.min(this.minVolume, volume);

@@ -1,5 +1,7 @@
 package net.aeronica.libs.mml.oldcore;
 
+import static net.aeronica.libs.mml.oldcore.MMLUtil.clamp;
+
 public class StatePart
 {
     private int volume;
@@ -34,27 +36,27 @@ public class StatePart
         if (this.volumeArcheAge)
             return volume;
         else
-            return getMinMax(0, 127, volume * 127 / 15);
+            return clamp(0, 127, volume * 127 / 15);
     }
 
     public void setVolume(int volume)
     {
-        this.volume = getMinMax(0, 127, volume);
+        this.volume = clamp(0, 127, volume);
         if (this.volume > 15)
             volumeArcheAge = true;
     }
 
     public int getOctave() {return octave;}
 
-    public void setOctave(int octave) {this.octave = getMinMax(1, 8, octave);}
+    public void setOctave(int octave) {this.octave = clamp(1, 8, octave);}
 
     /**
      * You can <<<< an octave to 0, but you can't
      * set octave to 0 via the octave command: o0
      */
-    void downOctave() {this.octave = getMinMax(0, 8, this.octave - 1);}
+    void downOctave() {this.octave = clamp(0, 8, this.octave - 1);}
 
-    void upOctave() {this.octave = getMinMax(1, 8, this.octave + 1);}
+    void upOctave() {this.octave = clamp(1, 8, this.octave + 1);}
 
     int getMMLLength() {return mmlLength;}
 
@@ -62,7 +64,7 @@ public class StatePart
 
     void setMMLLength(int mmlLength, boolean dotted)
     {
-        this.mmlLength = getMinMax(1, 64, mmlLength);
+        this.mmlLength = clamp(1, 64, mmlLength);
         this.dotted = dotted;
     }
 
@@ -73,6 +75,4 @@ public class StatePart
     boolean isTied() {return tied;}
 
     void setTied(boolean tied) {this.tied = tied;}
-
-    private int getMinMax(int min, int max, int value) {return Math.max(Math.min(max, value), min);}
 }
