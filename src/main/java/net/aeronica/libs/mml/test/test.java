@@ -15,7 +15,8 @@ public class test
     public static void main(String[] args) throws Exception
     {
         DataCharBuffer dataBuffer = new DataCharBuffer();
-        dataBuffer.data = mmlString.toCharArray();
+        // dataBuffer.data = mmlString.toCharArray();
+        dataBuffer.data = "MML@V10T240C+++D---E###F&F&&&FL8,,,,,T240V12GGG;;;--".toCharArray();
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -35,6 +36,7 @@ public class test
                 case ElementTypes.MML_SUSTAIN: { MMLUtil.MML_LOGGER.info(" sustain"); } break;
                 case ElementTypes.MML_TEMPO: { MMLUtil.MML_LOGGER.info(" tempo"); } break;
                 case ElementTypes.MML_VOLUME: { MMLUtil.MML_LOGGER.info(" volume"); } break;
+                case ElementTypes.MML_LENGTH: { MMLUtil.MML_LOGGER.info(" length"); } break;
                 case ElementTypes.MML_OCTAVE_UP: { MMLUtil.MML_LOGGER.info("  >"); } break;
                 case ElementTypes.MML_OCTAVE_DOWN: { MMLUtil.MML_LOGGER.info("  <"); } break;
                 case ElementTypes.MML_NOTE: { MMLUtil.MML_LOGGER.info(" note: {}", navigator.asChar()); } break;
