@@ -3,6 +3,7 @@ package net.aeronica.libs.mml.parser;
 import net.aeronica.libs.mml.core.DataCharBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 
+@SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class MMLParser
 {
     private int    position     = 0;
