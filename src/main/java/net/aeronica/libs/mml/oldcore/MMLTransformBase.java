@@ -275,7 +275,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                 midiNote--;
                 break;
             default:
-                // NOP
+                /* NOP */
             }
         }
         if (ctx.INT() != null)
@@ -415,7 +415,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                 instState.collectVolume(value);
                 break;
             default:
-                // NOP
+                /* NOP */
         }
     }
 

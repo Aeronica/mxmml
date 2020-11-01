@@ -6,7 +6,7 @@ public class ParserException extends RuntimeException
 {
     public ParserException()
     {
-        // NOP
+        /* NOP */
     }
 
     public ParserException(String message)

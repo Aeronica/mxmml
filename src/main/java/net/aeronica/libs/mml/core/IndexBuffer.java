@@ -12,7 +12,7 @@ public class IndexBuffer
 
     public IndexBuffer()
     {
-        // NOP
+        /* NOP */
     }
 
     public IndexBuffer(int capacity, boolean useTypeArray)

@@ -9,7 +9,7 @@ public class DataByteBuffer
 
     public DataByteBuffer()
     {
-        // NOP
+        /* NOP */
     }
 
     public DataByteBuffer(byte[] data)

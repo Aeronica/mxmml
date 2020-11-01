@@ -9,7 +9,7 @@ public class DataCharBuffer
 
     public DataCharBuffer()
     {
-        // NOP
+        /* NOP */
     }
 
     public DataCharBuffer(char[] data)
