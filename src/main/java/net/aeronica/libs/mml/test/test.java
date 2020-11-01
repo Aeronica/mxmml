@@ -8,11 +8,12 @@ import net.aeronica.libs.mml.parser.ElementTypes;
 import net.aeronica.libs.mml.parser.MMLNavigator;
 import net.aeronica.libs.mml.parser.MMLParser;
 
+@SuppressWarnings("unused")
 public class test
 {
-    private static String mmlString = TestData.MML2.getMML();
+    private static final String mmlString = TestData.MML2.getMML();
 
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         DataCharBuffer dataBuffer = new DataCharBuffer();
         // dataBuffer.data = mmlString.toCharArray();
