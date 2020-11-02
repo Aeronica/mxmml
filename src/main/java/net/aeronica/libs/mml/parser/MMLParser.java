@@ -1,6 +1,6 @@
 package net.aeronica.libs.mml.parser;
 
-import net.aeronica.libs.mml.core.DataCharBuffer;
+import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
@@ -10,7 +10,7 @@ public class MMLParser
     private int    elementIndex = 0;
 
     @SuppressWarnings("incomplete-switch")
-    public void parse(DataCharBuffer buffer, IndexBuffer elementBuffer)
+    public void parse(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         this.position = 0;
         this.elementIndex = 0;
@@ -85,7 +85,7 @@ public class MMLParser
         elementBuffer.count = this.elementIndex;
     }
 
-    private void parseMMLBegin(DataCharBuffer buffer, IndexBuffer elementBuffer)
+    private void parseMMLBegin(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         int len = buffer.data.length;
         if ((this.position + 1 >= len) || (this.position + 2 >= len) || (this.position + 3 >= len)) return;
@@ -99,7 +99,7 @@ public class MMLParser
         }
     }
 
-    private void parseNumberToken(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseNumberToken(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfNumberFound = false;
         while(!isEndOfNumberFound) {
@@ -124,7 +124,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseSharp(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseSharp(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
@@ -141,7 +141,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseFlat(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseFlat(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
@@ -157,7 +157,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseDot(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseDot(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
@@ -173,7 +173,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseTie(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseTie(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
@@ -189,7 +189,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseChord(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseChord(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
@@ -205,7 +205,7 @@ public class MMLParser
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
-    private void parseEnd(DataCharBuffer buffer, IndexBuffer elementBuffer) {
+    private void parseEnd(DataByteBuffer buffer, IndexBuffer elementBuffer) {
         int tempPos = this.position;
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {

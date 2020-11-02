@@ -1,12 +1,14 @@
 package net.aeronica.libs.mml.test;
 
-import net.aeronica.libs.mml.core.DataCharBuffer;
+import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.oldcore.MMLUtil;
 import net.aeronica.libs.mml.oldcore.TestData;
 import net.aeronica.libs.mml.parser.ElementTypes;
 import net.aeronica.libs.mml.parser.MMLNavigator;
 import net.aeronica.libs.mml.parser.MMLParser;
+
+import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("unused")
 public class test
@@ -15,9 +17,9 @@ public class test
 
     public static void main(String[] args)
     {
-        DataCharBuffer dataBuffer = new DataCharBuffer();
-        // dataBuffer.data = mmlString.toCharArray();
-        dataBuffer.data = "MML@V10T240C+++D---E###F&F&&&FL8,,,,,T240V12GGG;;;--".toCharArray();
+        DataByteBuffer dataBuffer = new DataByteBuffer();
+        dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
+        // dataBuffer.data = "MML@V10T240C+++D---E###F&F&&&FL8,,,,,T240V12GGG;;;--".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);

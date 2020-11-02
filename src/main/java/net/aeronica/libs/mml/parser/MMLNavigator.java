@@ -1,15 +1,15 @@
 package net.aeronica.libs.mml.parser;
 
-import net.aeronica.libs.mml.core.DataCharBuffer;
+import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 
 public class MMLNavigator
 {
-    private DataCharBuffer buffer     = null;
+    private DataByteBuffer buffer     = null;
     private IndexBuffer elementBuffer = null;
     private int         elementIndex  = 0;
 
-    public MMLNavigator(DataCharBuffer buffer, IndexBuffer elementBuffer)
+    public MMLNavigator(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         this.buffer = buffer;
         this.elementBuffer = elementBuffer;
@@ -66,7 +66,7 @@ public class MMLNavigator
                 int length = number.length();
                 try {
                     if (length >= 1 && length <= 5)
-                        return Integer.valueOf(number);
+                        return Integer.parseInt(number);
                 } catch (NumberFormatException e) {
                     return -1;
                 }
@@ -78,7 +78,7 @@ public class MMLNavigator
     public char asChar()
     {
         if (ElementTypes.MML_NOTE == type())
-            return this.buffer.data[this.elementBuffer.position[this.elementIndex]];
+            return (char) this.buffer.data[this.elementBuffer.position[this.elementIndex]];
         return 0;
     }
 }

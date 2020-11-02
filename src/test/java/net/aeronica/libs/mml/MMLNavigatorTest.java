@@ -1,11 +1,13 @@
 package net.aeronica.libs.mml;
 
-import net.aeronica.libs.mml.core.DataCharBuffer;
+import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.parser.ElementTypes;
 import net.aeronica.libs.mml.parser.MMLNavigator;
 import net.aeronica.libs.mml.parser.MMLParser;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,8 +18,8 @@ public class MMLNavigatorTest
     @Test
     public void testWithParser()
     {
-        DataCharBuffer dataBuffer = new DataCharBuffer();
-        dataBuffer.data = "MML@V10T240C+;".toCharArray();
+        DataByteBuffer dataBuffer = new DataByteBuffer();
+        dataBuffer.data = "MML@V10T240C+;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -30,7 +32,7 @@ public class MMLNavigatorTest
         assertsOnNavigator(dataBuffer, elementBuffer);
     }
 
-    private void assertsOnNavigator(DataCharBuffer dataBuffer, IndexBuffer elementBuffer)
+    private void assertsOnNavigator(DataByteBuffer dataBuffer, IndexBuffer elementBuffer)
     {
         MMLNavigator navigator = new MMLNavigator(dataBuffer, elementBuffer);
 
