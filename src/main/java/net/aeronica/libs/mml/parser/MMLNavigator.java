@@ -3,6 +3,11 @@ package net.aeronica.libs.mml.parser;
 import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
+import static net.aeronica.libs.mml.test.MMLUtil.MML_LOGGER;
+
 public class MMLNavigator
 {
     private DataByteBuffer buffer     = null;
@@ -60,14 +65,17 @@ public class MMLNavigator
         byte numberType = this.elementBuffer.type[this.elementIndex];
         switch (numberType)
         {
-            case ElementTypes.MML_NUMBER :
+            case ElementTypes.MML_NUMBER:
             {
-                String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex]);
-                int length = number.length();
-                try {
-                    if (length >= 1 && length <= 5)
+                try
+                {
+                    String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
+                    int length = number.length();
+                    MML_LOGGER.info("nav.asInt(): {}, valueOf: {}", number, Integer.valueOf(number));
+                    if (length >= 1 & length <=5)
                         return Integer.parseInt(number);
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | UnsupportedEncodingException e)
+                {
                     return -1;
                 }
             }
