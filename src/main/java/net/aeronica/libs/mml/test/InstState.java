@@ -2,7 +2,7 @@ package net.aeronica.libs.mml.test;
 
 import static net.aeronica.libs.mml.oldcore.MMLUtil.clamp;
 
-public class StateInst
+public class InstState
 {
     private int tempo;
     private int instrument;
@@ -13,7 +13,7 @@ public class StateInst
     private int perform = 0;
     private int sustain = 0;
 
-    StateInst()
+    InstState()
     {
         this.init();
         this.longestPart = 0;
@@ -76,7 +76,7 @@ public class StateInst
     @Override
     public String toString()
     {
-        return "@CommonState: tempo=" + tempo + ", instrument=" + instrument;
+        return "@InstState: tempo=" + tempo + ", instrument=" + instrument;
     }
 
     void collectVolume(int volumeIn)

@@ -25,16 +25,14 @@ public enum MMLUtil
      * @return MIDI note
      * @throws ParserException
      */
-    public static int getMIDINote(char rawNote, int mmlOctave) throws ParserException
+    public static int getMIDINote(char rawNote, int mmlOctave)
     {
-        int doreNote;
+        int doreNote = 0;
         /* Convert Note value to integer: aA=1, gG=7 */
         if (rawNote >=65 && rawNote <= 71)
             doreNote = rawNote - 64;
-        else if (rawNote >= 97 && rawNote <=103)
-            doreNote = rawNote - 96;
         else
-            throw new ParserException("Invalid character not in [abcdefgABCDEFG] -> " + String.format("%c", (char) rawNote));
+            doreNote = rawNote - 96;
 
         /* Get start of the MML Octave */
         int octave = (mmlOctave * 12) + 12;

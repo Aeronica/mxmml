@@ -10,19 +10,21 @@ import java.nio.charset.StandardCharsets;
 
 import static net.aeronica.libs.mml.parser.ElementTypes.*;
 import static net.aeronica.libs.mml.test.MMLUtil.MML_LOGGER;
+import static net.aeronica.libs.mml.test.MMLUtil.getMIDINote;
 
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
     private static final String mmlString = TestData.MML2.getMML();
-    private static final StateInst stateInst = new StateInst();
-    private static final StatePart statePart = new StatePart();
+    private static final InstState instState = new InstState();
+    private static final PartState partState = new PartState();
+    private static final NoteState noteState = new NoteState();
     
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
         //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i65535t180v10o5cccc&c&c;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = "MML@i6t180v10o5degc&c+&c;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -38,46 +40,46 @@ public class testNoteRestTie
         {
             switch(navigator.type())
             {
-                case MML_INSTRUMENT: { setInstrument(navigator); } break;
+                case MML_INSTRUMENT: { doInstrument(navigator); } break;
                 case MML_OCTAVE:
                 case MML_PERFORM:
                 case MML_SUSTAIN:
                 case MML_TEMPO:
-                case MML_VOLUME: { setCommand(navigator); } break;
-                case MML_LENGTH: { setLength(navigator); } break;
+                case MML_VOLUME: { doCommand(navigator); } break;
+                case MML_LENGTH: { doLength(navigator); } break;
                 case MML_OCTAVE_UP:
-                case MML_OCTAVE_DOWN:
-                case MML_FLAT: { navigator.next(); } break;
-                case MML_NOTE: { navigator.next(); } break;
-                case MML_SHARP: { navigator.next(); } break;
+                case MML_OCTAVE_DOWN: { navigator.next(); } break;
+                case MML_NOTE: { doNote(navigator); } break;
+                case MML_FLAT:
+                case MML_SHARP: { doAcc(navigator); } break;
                 case MML_MIDI: { navigator.next(); } break;
                 case MML_DOT: { navigator.next(); } break;
-                case MML_TIE: { navigator.next(); } break;
+                case MML_TIE: { doTie(navigator); } break;
                 case MML_REST: { navigator.next(); } break;
                 case MML_NUMBER: { navigator.next(); } break;
-                case MML_BEGIN: { navigator.next(); } break;
-                case MML_CHORD: { navigator.next(); } break;
-                case MML_END: { navigator.next(); } break;
+                case MML_BEGIN: { instState.init(); navigator.next(); } break;
+                case MML_CHORD: { partState.init(); navigator.next(); } break;
+                case MML_END: { MML_LOGGER.info(instState);navigator.next(); } break;
             }
         }  while (navigator.hasNext());
-        MML_LOGGER.info(stateInst);
-        MML_LOGGER.info(statePart);
+        MML_LOGGER.info(instState);
+        MML_LOGGER.info(partState);
     }
     
-    static void setInstrument(MMLNavigator nav)
+    static void doInstrument(MMLNavigator nav)
     {
         if (nav.hasNext())
         {
             nav.next();
             if (nav.type() == MML_NUMBER)
             {
-                stateInst.setInstrument(nav.asInt());
+                instState.setInstrument(nav.asInt());
                 nav.next();
             }
         }
     }
 
-    static void setCommand(MMLNavigator nav)
+    static void doCommand(MMLNavigator nav)
     {
         byte type = nav.type();
         if (nav.hasNext())
@@ -88,18 +90,18 @@ public class testNoteRestTie
                 int value = nav.asInt();
                 switch (type)
                 {
-                    case MML_OCTAVE: statePart.setOctave(value); break;
-                    case MML_PERFORM: statePart.setPerform(value); break;
-                    case MML_SUSTAIN: statePart.setSustain(value); break;
-                    case MML_TEMPO: stateInst.setTempo(value); break;
-                    case MML_VOLUME: statePart.setVolume(value); break;
+                    case MML_OCTAVE: partState.setOctave(value); break;
+                    case MML_PERFORM: partState.setPerform(value); break;
+                    case MML_SUSTAIN: partState.setSustain(value); break;
+                    case MML_TEMPO: instState.setTempo(value); break;
+                    case MML_VOLUME: partState.setVolume(value); break;
                 }
                 nav.next();
             }
         }
     }
 
-    static void setLength(MMLNavigator nav)
+    static void doLength(MMLNavigator nav)
     {
         if (nav.hasNext())
         {
@@ -110,14 +112,43 @@ public class testNoteRestTie
                 nav.next();
                 if (nav.type() == MML_DOT)
                 {
-                    statePart.setMMLLength(value, true);
+                    partState.setMMLLength(value, true);
                     nav.next();
                 }
                 else
                 {
-                    statePart.setMMLLength(value, false);
+                    partState.setMMLLength(value, false);
                 }
             }
         }
+    }
+
+    static void doTie(MMLNavigator nav)
+    {
+        if (nav.hasNext())
+        {
+            nav.next();
+            if (nav.type() == MML_NOTE)
+            {
+                partState.setTied(true);
+                doNote(nav);
+            } else
+                partState.setTied(false);
+        }
+    }
+
+    static void doAcc(MMLNavigator nav)
+    {
+        noteState.setAccidental(nav.type() == MML_SHARP ? 1 : -1);
+        if (nav.hasNext())
+            nav.next();
+    }
+
+    static void doNote(MMLNavigator nav)
+    {
+        noteState.init();
+        noteState.setCurrentNote(getMIDINote(nav.asChar(), partState.getOctave()));
+        if (nav.hasNext())
+            nav.next();
     }
 }

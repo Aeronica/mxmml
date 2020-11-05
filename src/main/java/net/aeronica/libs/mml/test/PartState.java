@@ -2,7 +2,7 @@ package net.aeronica.libs.mml.test;
 
 import static net.aeronica.libs.mml.test.MMLUtil.clamp;
 
-public class StatePart
+public class PartState
 {
     private int volume;
     private boolean volumeArcheAge;
@@ -10,11 +10,13 @@ public class StatePart
     private int mmlLength;
     private boolean dotted;
     private long runningTicks;
-    private boolean tied;
     private int perform;
     private int sustain;
+    private boolean tied;
 
-    StatePart() {this.init();}
+
+
+    PartState() {this.init();}
 
     public void init()
     {
@@ -24,13 +26,15 @@ public class StatePart
         mmlLength = 4;
         dotted = false;
         runningTicks = 0;
+        sustain = 0;
+        perform = 0;
         tied = false;
     }
 
     @Override
     public String toString()
     {
-        return "@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + " ,runningTicks=" + runningTicks + ", tied=" + tied;
+        return "@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + ", tie=" + tied + " ,runningTicks=" + runningTicks;
     }
 
     public int getVolume()
@@ -74,10 +78,6 @@ public class StatePart
 
     long getRunningTicks() {return runningTicks;}
 
-    boolean isTied() {return tied;}
-
-    void setTied(boolean tied) {this.tied = tied;}
-
     public int getPerform()
     {
         return perform;
@@ -96,5 +96,15 @@ public class StatePart
     public void setSustain(int sustain)
     {
         this.sustain = sustain;
+    }
+
+    public boolean isTied()
+    {
+        return tied;
+    }
+
+    public void setTied(boolean tied)
+    {
+        this.tied = tied;
     }
 }
