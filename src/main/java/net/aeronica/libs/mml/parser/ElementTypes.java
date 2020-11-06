@@ -24,4 +24,5 @@ public class ElementTypes
     public static final byte MML_BEGIN = 18;        // 'MML@' MML Begin
     public static final byte MML_CHORD = 19;        // ',' Add Chord/Harmony/Counterpoint
     public static final byte MML_END = 20;          // ';' MML End
+    public static final byte EOF = 21;              // End of file
 }

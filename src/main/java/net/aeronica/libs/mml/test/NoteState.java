@@ -2,10 +2,10 @@ package net.aeronica.libs.mml.test;
 
 public class NoteState
 {
-    private int lastNote;
-    private int currentNote;
+    private int pitch;
     private int accidental;
     private int duration;
+    private boolean dotted;
 
     public NoteState()
     {
@@ -15,35 +15,25 @@ public class NoteState
     @Override
     public String toString()
     {
-        return "@NoteState: lastNote=" + lastNote + ", currentNote" +  currentNote + ", acc=" + accidental;
+        return "@NoteState: note:" + pitch + ", acc: " + accidental +", duration: " + duration + ", dot: " + dotted;
     }
 
     void init()
     {
-        lastNote = -1;
-        currentNote = -1;
+        pitch = -1;
         accidental = 0;
         duration = -1;
+        dotted = false;
     }
 
-    public int getLastNote()
+    public int getPitch()
     {
-        return lastNote;
+        return pitch;
     }
 
-    public void setLastNote(int lastNote)
+    public void setPitch(int pitch)
     {
-        this.lastNote = lastNote;
-    }
-
-    public int getCurrentNote()
-    {
-        return currentNote;
-    }
-
-    public void setCurrentNote(int currentNote)
-    {
-        this.currentNote = currentNote;
+        this.pitch = pitch;
     }
 
     public int getAccidental()
@@ -64,5 +54,15 @@ public class NoteState
     public void setDuration(int duration)
     {
         this.duration = duration;
+    }
+
+    public boolean isDotted()
+    {
+        return dotted;
+    }
+
+    public void setDotted(boolean dotted)
+    {
+        this.dotted = dotted;
     }
 }

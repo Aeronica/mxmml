@@ -13,8 +13,7 @@ public class PartState
     private int perform;
     private int sustain;
     private boolean tied;
-
-
+    private int prevPitch;
 
     PartState() {this.init();}
 
@@ -29,6 +28,8 @@ public class PartState
         sustain = 0;
         perform = 0;
         tied = false;
+        prevPitch = -1;
+
     }
 
     @Override
@@ -106,5 +107,15 @@ public class PartState
     public void setTied(boolean tied)
     {
         this.tied = tied;
+    }
+
+    public int getPrevPitch()
+    {
+        return prevPitch;
+    }
+
+    public void setPrevPitch(int prevPitch)
+    {
+        this.prevPitch = prevPitch;
     }
 }
