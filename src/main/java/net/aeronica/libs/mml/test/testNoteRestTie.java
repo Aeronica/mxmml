@@ -25,7 +25,7 @@ public class testNoteRestTie
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
         //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i6t180v10l8o5d-eg1c&c+4&c.r1n60;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = "MML@i6t180v10l8o5d-eg1n60&c&c-4&c.r1&n60;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -126,7 +126,10 @@ public class testNoteRestTie
 
     static void doTie(MMLNavigator nav)
     {
-        partState.setTied(true);
+        // Only tie if the next element is a NOTE/MIDI
+        byte peekValue = peekNextType(nav);
+        if (peekValue == MML_NOTE || peekValue == MML_MIDI)
+            partState.setTied(true);
         if (nav.hasNext())
             nav.next();
     }
@@ -171,10 +174,12 @@ public class testNoteRestTie
             nav.next();
             noteState.setDotted(true);
         }
-        MML_LOGGER.info("NOTE " + noteState);
 
         // Do Tie Processing HERE ****
         // Emit/Store Note depending on tie/pitch
+        boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
+        MML_LOGGER.info("NOTE " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        partState.setPrevPitch(noteState.getPitch());
 
         if (nav.hasNext())
             nav.next();
@@ -209,10 +214,12 @@ public class testNoteRestTie
         {
             nav.next();
         }
-        MML_LOGGER.info("MIDI " + noteState);
 
         // Do Tie Processing HERE ****
         // Emit/Store Note depending on tie/pitch
+        boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
+        MML_LOGGER.info("MIDI " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        partState.setPrevPitch(noteState.getPitch());
 
         if (nav.hasNext())
             nav.next();
@@ -220,7 +227,10 @@ public class testNoteRestTie
 
     static void doRest(MMLNavigator nav)
     {
+        // REST breaks ties between notes
         partState.setTied(false);
+        partState.setPrevPitch(-1);
+
         restState.init();
         restState.setDuration(partState.getMMLLength());
         restState.setDotted(partState.isDotted());
