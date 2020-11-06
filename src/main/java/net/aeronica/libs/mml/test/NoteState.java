@@ -1,5 +1,7 @@
 package net.aeronica.libs.mml.test;
 
+import static net.aeronica.libs.mml.parser.ElementTypes.MML_SHARP;
+
 public class NoteState
 {
     private int pitch;
@@ -15,7 +17,8 @@ public class NoteState
     @Override
     public String toString()
     {
-        return "@NoteState: note:" + pitch + ", acc: " + accidental +", duration: " + duration + ", dot: " + dotted;
+        return "@NoteState: base note:" + pitch + ", acc: " + accidental + ", final note: " + (pitch + accidental)
+                + ", duration: " + duration + ", dot: " + dotted;
     }
 
     void init()
@@ -28,7 +31,7 @@ public class NoteState
 
     public int getPitch()
     {
-        return pitch;
+        return pitch + accidental;
     }
 
     public void setPitch(int pitch)
@@ -43,7 +46,7 @@ public class NoteState
 
     public void setAccidental(int accidental)
     {
-        this.accidental = accidental;
+        this.accidental = accidental == MML_SHARP ? 1 : -1;
     }
 
     public int getDuration()
