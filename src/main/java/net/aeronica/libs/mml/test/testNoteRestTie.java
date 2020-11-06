@@ -19,12 +19,13 @@ public class testNoteRestTie
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
+    private static final NoteState restState = new NoteState();
     
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
         //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i6t180v10l8o5d+-+-egc&c+4&c.;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = "MML@i6t180v10l8o5d-eg1c&c+4&c.r1n60;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -48,18 +49,18 @@ public class testNoteRestTie
                 case MML_VOLUME: { doCommand(navigator); } break;
                 case MML_LENGTH: { doLength(navigator); } break;
                 case MML_OCTAVE_UP:
-                case MML_OCTAVE_DOWN: { navigator.next(); } break;
+                case MML_OCTAVE_DOWN: { doOctaveUpDown(navigator); } break;
                 case MML_NOTE: { doNote(navigator); } break;
+                case MML_NUMBER:
                 case MML_FLAT:
-                case MML_SHARP: { navigator.next(); } break;
-                case MML_MIDI: { navigator.next(); } break;
+                case MML_SHARP:
                 case MML_DOT: { navigator.next(); } break;
+                case MML_MIDI: { doMidi(navigator); } break;
                 case MML_TIE: { doTie(navigator); } break;
-                case MML_REST: { navigator.next(); } break;
-                case MML_NUMBER: { navigator.next(); } break;
-                case MML_BEGIN: { instState.init(); navigator.next(); } break;
-                case MML_CHORD: { partState.init(); navigator.next(); } break;
-                case MML_END: { MML_LOGGER.info(instState);navigator.next(); } break;
+                case MML_REST: { doRest(navigator); } break;
+                case MML_BEGIN: { MML_LOGGER.info("BEGIN"); instState.init(); MML_LOGGER.info(instState); navigator.next(); } break;
+                case MML_CHORD: { MML_LOGGER.info(partState); MML_LOGGER.info("CHORD"); partState.init(); MML_LOGGER.info(partState); navigator.next(); } break;
+                case MML_END: { MML_LOGGER.info("END") ;navigator.next(); } break;
             }
         }  while (navigator.hasNext());
         MML_LOGGER.info(instState);
@@ -170,9 +171,86 @@ public class testNoteRestTie
             nav.next();
             noteState.setDotted(true);
         }
-        MML_LOGGER.info(noteState);
+        MML_LOGGER.info("NOTE " + noteState);
 
         // Do Tie Processing HERE ****
+        // Emit/Store Note depending on tie/pitch
+
+        if (nav.hasNext())
+            nav.next();
+    }
+
+    static void doMidi(MMLNavigator nav)
+    {
+        int prevPitch = partState.getPrevPitch();
+        noteState.init();
+        noteState.setDuration(partState.getMMLLength());
+        noteState.setDotted(partState.isDotted());
+        int nextType;
+        // Accidental handling not needed for MIDI notes, but again some idiot will try it, so just eat them.
+        do // handle a crazy ass run on accidental sequence +-+---++++ as seen in some whack MML.
+        {
+            nextType = peekNextType(nav);
+            if (nextType == MML_SHARP || nextType == MML_FLAT)
+            {
+                nav.next();
+                nextType = peekNextType(nav);
+            }
+        }
+        while (nextType == MML_SHARP || nextType == MML_FLAT);
+        if (nextType == MML_NUMBER)
+        {
+            nav.next();
+            noteState.setPitch(nav.asInt()+12);
+            nextType = peekNextType(nav);
+        }
+        // Dots are not used on MIDI notes, eat them
+        if (nextType == MML_DOT)
+        {
+            nav.next();
+        }
+        MML_LOGGER.info("MIDI " + noteState);
+
+        // Do Tie Processing HERE ****
+        // Emit/Store Note depending on tie/pitch
+
+        if (nav.hasNext())
+            nav.next();
+    }
+
+    static void doRest(MMLNavigator nav)
+    {
+        partState.setTied(false);
+        restState.init();
+        restState.setDuration(partState.getMMLLength());
+        restState.setDotted(partState.isDotted());
+        int nextType;
+        // RESTs don't really need these, but I've seen MML where people treat them like notes. example: r&r+2.
+        //  I'm guessing they simply silence notes that way for testing.
+        do // handle a crazy ass run on accidental sequence +-+---++++ as seen in some whack MML.
+        {
+            nextType = peekNextType(nav);
+            if (nextType == MML_SHARP || nextType == MML_FLAT)
+            {
+                nav.next();
+                nextType = peekNextType(nav);
+            }
+        }
+        while (nextType == MML_SHARP || nextType == MML_FLAT);
+        if (nextType == MML_NUMBER)
+        {
+            nav.next();
+            restState.setDuration(nav.asInt());
+            nextType = peekNextType(nav);
+        }
+        if (nextType == MML_DOT)
+        {
+            nav.next();
+            restState.setDotted(true);
+        }
+        MML_LOGGER.info("REST " + restState);
+
+        // Do rest Processing HERE ****
         // Emit/Store Note depending on tie/pitch
 
         if (nav.hasNext())
