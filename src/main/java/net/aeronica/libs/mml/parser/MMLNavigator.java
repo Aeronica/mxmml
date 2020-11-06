@@ -22,7 +22,7 @@ public class MMLNavigator
 
     public boolean hasNext()
     {
-        return this.elementIndex < this.elementBuffer.count - 1;
+        return this.elementIndex < this.elementBuffer.count;
     }
 
     public void next()
