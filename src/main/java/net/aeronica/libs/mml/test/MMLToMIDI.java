@@ -11,7 +11,7 @@ import static net.aeronica.libs.mml.oldcore.MMLUtil.*;
 
 public class MMLToMIDI
 {
-    private static final double PPQ = 384.0;
+    private static final double PPQ = 96.0;
     private static final int TICKS_OFFSET = 10;
     // 8 players with 10 parts each = 80 parts.
     // 12 slots with 10 parts each = 120 parts.
