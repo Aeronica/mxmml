@@ -12,7 +12,6 @@ public class PlayMIDI implements MetaEventListener
     private Soundbank soundbank;
     private Sequencer sequencer;
     private Synthesizer synthesizer;
-    private boolean done = false;
 
     PlayMIDI() {/* NOP */}
 
@@ -20,7 +19,7 @@ public class PlayMIDI implements MetaEventListener
     @Override
     public void meta(MetaMessage event)
     {
-        if (event.getType() == 47 || done)
+        if (event.getType() == 47)
         { // end of stream
             sequencer.stop();
             sequencer.setMicrosecondPosition(0L);
