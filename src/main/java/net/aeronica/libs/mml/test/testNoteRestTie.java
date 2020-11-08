@@ -16,7 +16,7 @@ import static net.aeronica.libs.mml.test.MMLUtil.*;
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
-    private static final String mmlString = TestData.MML0.getMML();
+    private static final String mmlString = TestData.MML5.getMML();
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
@@ -157,6 +157,8 @@ public class testNoteRestTie
         addMMLObj(new MMLObject.Builder(MMLObject.Type.INST_END)
                           .cumulativeTicks(partState.getRunningTicks())
                           .build());
+        instState.init();
+        partState.init();
         nav.next();
     }
 
