@@ -11,7 +11,7 @@ import static net.aeronica.libs.mml.oldcore.MMLUtil.*;
 
 public class MMLToMIDI
 {
-    private static final double PPQ = 96.0;
+    private static final double PPQ = 384.0;
     private static final int TICKS_OFFSET = 10;
     // 8 players with 10 parts each = 80 parts.
     // 12 slots with 10 parts each = 120 parts.
@@ -58,37 +58,37 @@ public class MMLToMIDI
                 switch (mmo.getType())
                 {
                     case SUSTAIN:
-                case INST_BEGIN:
-                case REST:
-                    break;
+                    case INST_BEGIN:
+                    case REST:
+                        break;
 
-                case TEMPO:
-                    currentTempo = mmo.getTempo();
-                    tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
-                    break;
+                    case TEMPO:
+                        currentTempo = mmo.getTempo();
+                        tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
+                        break;
 
-                case INST:
-                    addInstrument(mmo, tracks[track], channel, ticksOffset);
-                    break;
+                    case INST:
+                        addInstrument(mmo, tracks[track], channel, ticksOffset);
+                        break;
 
-                case PART:
-                    nextTrack();
-                    break;
+                    case PART:
+                        nextTrack();
+                        break;
 
-                case NOTE:
-                    addNote(mmo, tracks, track, channel, ticksOffset);
-                    break;
+                    case NOTE:
+                        addNote(mmo, tracks, track, channel, ticksOffset);
+                        break;
 
-                case INST_END:
-                    nextTrack();
-                    nextChannel();
-                    break;
+                    case INST_END:
+                        nextTrack();
+                        nextChannel();
+                        break;
 
-                case DONE:
-                    break;
+                    case DONE:
+                        break;
 
-                default:
-                    MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
+                    default:
+                        MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
             }
         } catch (InvalidMidiDataException e)

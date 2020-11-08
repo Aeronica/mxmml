@@ -16,7 +16,7 @@ import static net.aeronica.libs.mml.test.MMLUtil.*;
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
-    private static final String mmlString = TestData.MML0.getMML();
+    private static final String mmlString = TestData.MML2.getMML();
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
@@ -26,22 +26,20 @@ public class testNoteRestTie
     private static final List<MMLObject> mmlObjs = new ArrayList<>(1000);
 
     // MIDI Constants
-    private static final double PPQ = 96.0;
+    private static final double PPQ = 384.0;
 
     
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
-        //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i75tv10l16.o5crcrcrcr4d&d&d&drer;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
+        //dataBuffer.data = "MML@i75tv10l8o5crcrcrcr4d-&d-&d-&d-e;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
 
         MMLParser parser = new MMLParser();
         parser.parse(dataBuffer, elementBuffer);
-
-
 
         MMLNavigator navigator = new MMLNavigator(dataBuffer, elementBuffer);
         if (!navigator.hasNext()) return;
@@ -68,11 +66,10 @@ public class testNoteRestTie
                 case MML_REST: { doRest(navigator); } break;
                 case MML_BEGIN: { doBegin(navigator); } break;
                 case MML_CHORD: { doChord(navigator); } break;
-                case MML_END: { MML_LOGGER.info("END") ;navigator.next(); } break;
+                case MML_END: { doEnd(navigator); } break;
             }
         }  while (navigator.hasNext());
 
-        instState.collectDurationTicks(partState.getRunningTicks());
         addMMLObj(new MMLObject.Builder(MMLObject.Type.DONE)
                           .longestPartTicks(instState.getLongestDurationTicks())
                           .minVolume(instState.getMinVolume())
@@ -82,10 +79,11 @@ public class testNoteRestTie
         MML_LOGGER.info(partState);
         mmlObjs.forEach(p-> MML_LOGGER.info("{} {} {}", mmlObjs.lastIndexOf(p), p.getType(), p.isTied()));
 
-        MMLToMIDI toMIDI = new MMLToMIDI(mmlObjs);
         MML_LOGGER.info("");
         MML_LOGGER.info("*** Process Tied Notes ***");
         processTiedNotes(mmlObjs);
+        MMLToMIDI toMIDI = new MMLToMIDI(mmlObjs);
+
         PlayMIDI player = new PlayMIDI();
         player.mmlPlay(toMIDI.getSequence());
     }
@@ -135,19 +133,28 @@ public class testNoteRestTie
         MML_LOGGER.info("BEGIN");
         instState.init();
         partState.init();
-        MML_LOGGER.info(instState); nav.next();
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.INST_BEGIN).build());
+        nav.next();
     }
 
     static void doChord(MMLNavigator nav)
     {
+        MML_LOGGER.info("CHORD");
         instState.collectDurationTicks(partState.getRunningTicks());
         addMMLObj(new MMLObject.Builder(MMLObject.Type.PART)
                           .cumulativeTicks(partState.getRunningTicks())
                           .build());
-        MML_LOGGER.info(partState);
-        MML_LOGGER.info("CHORD");
         partState.init();
-        MML_LOGGER.info(partState);
+        nav.next();
+    }
+
+    static void doEnd(MMLNavigator nav)
+    {
+        MML_LOGGER.info("END");
+        instState.collectDurationTicks(partState.getRunningTicks());
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.INST_END)
+                          .cumulativeTicks(partState.getRunningTicks())
+                          .build());
         nav.next();
     }
 
