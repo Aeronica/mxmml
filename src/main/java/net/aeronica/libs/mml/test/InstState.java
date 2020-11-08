@@ -76,7 +76,7 @@ public class InstState
     @Override
     public String toString()
     {
-        return "@InstState: tempo=" + tempo + ", instrument=" + instrument;
+        return "@InstState: tempo=" + tempo + ", instrument=" + instrument + ", LongestDurationTicks= " + longestPart;
     }
 
     void collectVolume(int volumeIn)

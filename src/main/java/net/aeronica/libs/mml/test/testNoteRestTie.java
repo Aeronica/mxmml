@@ -7,10 +7,11 @@ import net.aeronica.libs.mml.parser.MMLNavigator;
 import net.aeronica.libs.mml.parser.MMLParser;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.aeronica.libs.mml.parser.ElementTypes.*;
-import static net.aeronica.libs.mml.test.MMLUtil.MML_LOGGER;
-import static net.aeronica.libs.mml.test.MMLUtil.getMIDINote;
+import static net.aeronica.libs.mml.test.MMLUtil.*;
 
 @SuppressWarnings("unused")
 public class testNoteRestTie
@@ -20,6 +21,13 @@ public class testNoteRestTie
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
     private static final NoteState restState = new NoteState();
+
+    // Collect Notes, Rests, etc.
+    private static final List<MMLObject> mmlObjs = new ArrayList<>(1000);
+
+    // MIDI Constants
+    private static final double PPQ = 384.0;
+
     
     public static void main(String[] args)
     {
@@ -41,7 +49,7 @@ public class testNoteRestTie
         {
             switch(navigator.type())
             {
-                case MML_INSTRUMENT: { doInstrument(navigator); } break;
+                case MML_INSTRUMENT:
                 case MML_OCTAVE:
                 case MML_PERFORM:
                 case MML_SUSTAIN:
@@ -50,34 +58,49 @@ public class testNoteRestTie
                 case MML_LENGTH: { doLength(navigator); } break;
                 case MML_OCTAVE_UP:
                 case MML_OCTAVE_DOWN: { doOctaveUpDown(navigator); } break;
+                case MML_MIDI:
                 case MML_NOTE: { doNote(navigator); } break;
                 case MML_NUMBER:
                 case MML_FLAT:
                 case MML_SHARP:
                 case MML_DOT: { navigator.next(); } break;
-                case MML_MIDI: { doMidi(navigator); } break;
                 case MML_TIE: { doTie(navigator); } break;
                 case MML_REST: { doRest(navigator); } break;
-                case MML_BEGIN: { MML_LOGGER.info("BEGIN"); instState.init(); MML_LOGGER.info(instState); navigator.next(); } break;
-                case MML_CHORD: { MML_LOGGER.info(partState); MML_LOGGER.info("CHORD"); partState.init(); MML_LOGGER.info(partState); navigator.next(); } break;
+                case MML_BEGIN: { doBegin(navigator); } break;
+                case MML_CHORD: { doChord(navigator); } break;
                 case MML_END: { MML_LOGGER.info("END") ;navigator.next(); } break;
             }
         }  while (navigator.hasNext());
+
+        instState.collectDurationTicks(partState.getRunningTicks());
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.DONE)
+                          .longestPartTicks(instState.getLongestDurationTicks())
+                          .minVolume(instState.getMinVolume())
+                          .maxVolume(instState.getMaxVolume())
+                          .build());
         MML_LOGGER.info(instState);
         MML_LOGGER.info(partState);
     }
-    
-    static void doInstrument(MMLNavigator nav)
+
+    static void doBegin(MMLNavigator nav)
     {
-        if (nav.hasNext())
-        {
-            nav.next();
-            if (nav.type() == MML_NUMBER)
-            {
-                instState.setInstrument(nav.asInt());
-                nav.next();
-            }
-        }
+        MML_LOGGER.info("BEGIN");
+        instState.init();
+        partState.init();
+        MML_LOGGER.info(instState); nav.next();
+    }
+
+    static void doChord(MMLNavigator nav)
+    {
+        instState.collectDurationTicks(partState.getRunningTicks());
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.PART)
+                          .cumulativeTicks(partState.getRunningTicks())
+                          .build());
+        MML_LOGGER.info(partState);
+        MML_LOGGER.info("CHORD");
+        partState.init();
+        MML_LOGGER.info(partState);
+        nav.next();
     }
 
     static void doCommand(MMLNavigator nav)
@@ -91,10 +114,29 @@ public class testNoteRestTie
                 int value = nav.asInt();
                 switch (type)
                 {
+                    case MML_INSTRUMENT:
+                        instState.setInstrument(nav.asInt());
+                        addMMLObj(new MMLObject.Builder(MMLObject.Type.INST)
+                            .instrument(instState.getInstrument())
+                            .startingTicks(partState.getRunningTicks())
+                            .build());
+                        break;
                     case MML_OCTAVE: partState.setOctave(value); break;
                     case MML_PERFORM: partState.setPerform(value); break;
-                    case MML_SUSTAIN: partState.setSustain(value); break;
-                    case MML_TEMPO: instState.setTempo(value); break;
+                    case MML_SUSTAIN:
+                        partState.setSustain(value);
+                        addMMLObj(new MMLObject.Builder(MMLObject.Type.SUSTAIN)
+                            .sustain(partState.getSustain())
+                            .startingTicks(partState.getRunningTicks())
+                            .build());
+                        break;
+                    case MML_TEMPO:
+                        instState.setTempo(value);
+                        addMMLObj(new MMLObject.Builder(MMLObject.Type.TEMPO)
+                            .tempo(instState.getTempo())
+                            .startingTicks(partState.getRunningTicks())
+                            .build());
+                        break;
                     case MML_VOLUME: partState.setVolume(value); break;
                 }
                 nav.next();
@@ -129,7 +171,9 @@ public class testNoteRestTie
         // Only tie if the next element is a NOTE/MIDI
         byte peekValue = peekNextType(nav);
         if (peekValue == MML_NOTE || peekValue == MML_MIDI)
-            partState.setTied(true);
+        {
+            partState.setTied(true); MML_LOGGER.info(" &");
+        }
         if (nav.hasNext())
             nav.next();
     }
@@ -146,9 +190,11 @@ public class testNoteRestTie
 
     static void doNote(MMLNavigator nav)
     {
+        byte noteType = nav.type();
         int prevPitch = partState.getPrevPitch();
         noteState.init();
-        noteState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
+        if (noteType == MML_NOTE)
+            noteState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
         noteState.setDuration(partState.getMMLLength());
         noteState.setDotted(partState.isDotted());
         int nextType;
@@ -158,7 +204,8 @@ public class testNoteRestTie
             if (nextType == MML_SHARP || nextType == MML_FLAT)
             {
                 nav.next();
-                noteState.setAccidental(nav.type());
+                if (noteType == MML_NOTE)
+                    noteState.setAccidental(nav.type());
                 nextType = peekNextType(nav);
             }
         }
@@ -166,67 +213,95 @@ public class testNoteRestTie
         if (nextType == MML_NUMBER)
         {
             nav.next();
-            noteState.setDuration(nav.asInt());
+            if (noteType == MML_NOTE)
+                noteState.setDuration(nav.asInt());
+            else
+                noteState.setPitch(nav.asInt()+12); //MIDI Note
             nextType = peekNextType(nav);
         }
         if (nextType == MML_DOT)
         {
             nav.next();
-            noteState.setDotted(true);
+            if (noteType == MML_NOTE)
+                noteState.setDotted(true);
         }
 
-        // Do Tie Processing HERE ****
-        // Emit/Store Note depending on tie/pitch
+        long lengthTicks = durationTicks(noteState.getDuration(), noteState.isDotted());
+        partState.accumulateTicks(lengthTicks);
         boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
-        MML_LOGGER.info("NOTE " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.NOTE)
+                          .midiNote(noteState.getPitch())
+                          .startingTicks(partState.getRunningTicks())
+                          .lengthTicks(lengthTicks)
+                          .volume(partState.getVolume())
+                          .tied(tiedNote)
+                          .build());
+
+        if (noteType == MML_NOTE)
+            MML_LOGGER.info("NOTE " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        else
+            MML_LOGGER.info("MIDI " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
         partState.setPrevPitch(noteState.getPitch());
+        partState.setTied(false);
 
         if (nav.hasNext())
             nav.next();
     }
 
-    static void doMidi(MMLNavigator nav)
-    {
-        int prevPitch = partState.getPrevPitch();
-        noteState.init();
-        noteState.setDuration(partState.getMMLLength());
-        noteState.setDotted(partState.isDotted());
-        int nextType;
-        // Accidental handling not needed for MIDI notes, but again some idiot will try it, so just eat them.
-        do // handle a crazy ass run on accidental sequence +-+---++++ as seen in some whack MML.
-        {
-            nextType = peekNextType(nav);
-            if (nextType == MML_SHARP || nextType == MML_FLAT)
-            {
-                nav.next();
-                nextType = peekNextType(nav);
-            }
-        }
-        while (nextType == MML_SHARP || nextType == MML_FLAT);
-        if (nextType == MML_NUMBER)
-        {
-            nav.next();
-            noteState.setPitch(nav.asInt()+12);
-            nextType = peekNextType(nav);
-        }
-        // Dots are not used on MIDI notes, eat them
-        if (nextType == MML_DOT)
-        {
-            nav.next();
-        }
-
-        // Do Tie Processing HERE ****
-        // Emit/Store Note depending on tie/pitch
-        boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
-        MML_LOGGER.info("MIDI " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
-        partState.setPrevPitch(noteState.getPitch());
-
-        if (nav.hasNext())
-            nav.next();
-    }
+//    static void doMidi(MMLNavigator nav)
+//    {
+//        int prevPitch = partState.getPrevPitch();
+//        noteState.init();
+//        noteState.setDuration(partState.getMMLLength());
+//        noteState.setDotted(partState.isDotted());
+//        int nextType;
+//        // Accidental handling not needed for MIDI notes, but again some idiot will try it, so just eat them.
+//        do // handle a crazy ass run on accidental sequence +-+---++++ as seen in some whack MML.
+//        {
+//            nextType = peekNextType(nav);
+//            if (nextType == MML_SHARP || nextType == MML_FLAT)
+//            {
+//                nav.next();
+//                nextType = peekNextType(nav);
+//            }
+//        }
+//        while (nextType == MML_SHARP || nextType == MML_FLAT);
+//        if (nextType == MML_NUMBER)
+//        {
+//            nav.next();
+//            noteState.setPitch(nav.asInt()+12);
+//            nextType = peekNextType(nav);
+//        }
+//        // Dots are not used on MIDI notes, eat them
+//        if (nextType == MML_DOT)
+//        {
+//            nav.next();
+//        }
+//
+//        long lengthTicks = durationTicks(noteState.getDuration(), noteState.isDotted());
+//        partState.accumulateTicks(lengthTicks);
+//        boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
+//
+//        addMMLObj(new MMLObject.Builder(MMLObject.Type.NOTE)
+//                          .midiNote(noteState.getPitch())
+//                          .startingTicks(partState.getRunningTicks())
+//                          .lengthTicks(lengthTicks)
+//                          .volume(partState.getVolume())
+//                          .tied(tiedNote)
+//                          .build());
+//
+//        MML_LOGGER.info("MIDI " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+//        partState.setPrevPitch(noteState.getPitch());
+//        partState.setTied(false);
+//
+//        if (nav.hasNext())
+//            nav.next();
+//    }
 
     static void doRest(MMLNavigator nav)
     {
+        long startingTicks = partState.getRunningTicks();
         // REST breaks ties between notes
         partState.setTied(false);
         partState.setPrevPitch(-1);
@@ -247,6 +322,7 @@ public class testNoteRestTie
             }
         }
         while (nextType == MML_SHARP || nextType == MML_FLAT);
+
         if (nextType == MML_NUMBER)
         {
             nav.next();
@@ -261,7 +337,13 @@ public class testNoteRestTie
         MML_LOGGER.info("REST " + restState);
 
         // Do rest Processing HERE ****
-        // Emit/Store Note depending on tie/pitch
+        long lengthTicks = durationTicks(restState.getDuration(), restState.isDotted());
+        partState.accumulateTicks(lengthTicks);
+
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.REST)
+            .startingTicks(startingTicks)
+            .lengthTicks(lengthTicks)
+            .build());
 
         if (nav.hasNext())
             nav.next();
@@ -277,5 +359,17 @@ public class testNoteRestTie
             nav.previous();
         }
         return elementType;
+    }
+
+    private static void addMMLObj(MMLObject mmlObject)
+    {
+        mmlObjs.add(mmlObject);
+    }
+
+    private static long durationTicks(int mmlNoteLength, boolean dottedLEN)
+    {
+        mmlNoteLength = clamp(1, 64, mmlNoteLength);
+        double dot = dottedLEN ? 15.0d : 10.0d;
+        return (long) (((4.0d / (double) mmlNoteLength) * dot / 10.0d) * PPQ);
     }
 }

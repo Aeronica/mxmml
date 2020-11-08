@@ -11,7 +11,7 @@ public class PartState
     private boolean dotted;
     private long runningTicks;
     private int perform;
-    private int sustain;
+    private boolean sustain;
     private boolean tied;
     private int prevPitch;
 
@@ -25,11 +25,10 @@ public class PartState
         mmlLength = 4;
         dotted = false;
         runningTicks = 0;
-        sustain = 0;
+        sustain = false;
         perform = 0;
         tied = false;
         prevPitch = -1;
-
     }
 
     @Override
@@ -89,14 +88,14 @@ public class PartState
         this.perform = perform;
     }
 
-    public int getSustain()
+    public boolean getSustain()
     {
         return sustain;
     }
 
     public void setSustain(int sustain)
     {
-        this.sustain = sustain;
+        this.sustain = sustain > 0;
     }
 
     public boolean isTied()
