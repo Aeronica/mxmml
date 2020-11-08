@@ -16,7 +16,7 @@ import static net.aeronica.libs.mml.test.MMLUtil.*;
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
-    private static final String mmlString = TestData.MML2.getMML();
+    private static final String mmlString = TestData.MML0.getMML();
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
@@ -26,14 +26,14 @@ public class testNoteRestTie
     private static final List<MMLObject> mmlObjs = new ArrayList<>(1000);
 
     // MIDI Constants
-    private static final double PPQ = 384.0;
+    private static final double PPQ = 96.0;
 
     
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
         //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i6t180v10l8o5d-eg1n60&c&c-4&c.r1&n60;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = "MML@i75tv10l16.o5crcrcrcr4d&d&d&drer;".getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -80,6 +80,54 @@ public class testNoteRestTie
                           .build());
         MML_LOGGER.info(instState);
         MML_LOGGER.info(partState);
+        mmlObjs.forEach(p-> MML_LOGGER.info("{} {} {}", mmlObjs.lastIndexOf(p), p.getType(), p.isTied()));
+
+        MMLToMIDI toMIDI = new MMLToMIDI(mmlObjs);
+        MML_LOGGER.info("");
+        MML_LOGGER.info("*** Process Tied Notes ***");
+        processTiedNotes(mmlObjs);
+        PlayMIDI player = new PlayMIDI();
+        player.mmlPlay(toMIDI.getSequence());
+    }
+
+    static void processTiedNotes(List<MMLObject> mmlObjs)
+    {
+        boolean lastTied = false;
+        for (int idx = mmlObjs.size()-1; idx > 0; idx-- )
+        {
+            MMLObject mo = mmlObjs.get(idx);
+            if (mo.getType() == MMLObject.Type.PART || mo.getType() == MMLObject.Type.INST_END || mo.getType() == MMLObject.Type.REST)
+                lastTied = false;
+            if (mo.getType() == MMLObject.Type.NOTE)
+            {
+                if (mo.isTied() && !lastTied) // End of tie
+                {
+                    MML_LOGGER.info("{} End of tie", mo.getMidiNote());
+                    lastTied = true;
+                    mo.setDoNoteOn(false);
+                    mo.setDoNoteOff(true);
+                } else if (mo.isTied() && lastTied) // Mid tie
+                {
+                    MML_LOGGER.info("{}    Mid tie", mo.getMidiNote());
+                    lastTied = true;
+                    mo.setDoNoteOn(false);
+                    mo.setDoNoteOff(false);
+                } else if (!mo.isTied() && lastTied) // Begin tie
+                {
+                    MML_LOGGER.info("{}  Begin tie", mo.getMidiNote());
+                    lastTied = false;
+                    mo.setDoNoteOn(true);
+                    mo.setDoNoteOff(false);
+                } else if (!mo.isTied() && !lastTied)
+                {
+                    MML_LOGGER.info("{}     No tie", mo.getMidiNote());
+                    lastTied = false;
+                    mo.setDoNoteOn(true);
+                    mo.setDoNoteOff(true);
+                }
+            }
+        }
+
     }
 
     static void doBegin(MMLNavigator nav)
@@ -210,6 +258,7 @@ public class testNoteRestTie
             }
         }
         while (nextType == MML_SHARP || nextType == MML_FLAT);
+
         if (nextType == MML_NUMBER)
         {
             nav.next();

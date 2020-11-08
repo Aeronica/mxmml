@@ -20,6 +20,8 @@ public class MMLObject
     private final int maxVolume;
     private final boolean sustain;
     private final boolean tied;
+    private boolean doNoteOn = true;
+    private boolean doNoteOff = true;
     
     public MMLObject(Builder builder)
     {
@@ -51,6 +53,12 @@ public class MMLObject
     public int getTempo() {return tempo;}
     public int getMinVolume() {return minVolume;}
     public int getMaxVolume() {return maxVolume;}
+    public boolean isTied() {return tied;}
+
+    public void setDoNoteOn(boolean state) {doNoteOn = state;}
+    public void setDoNoteOff(boolean state) {doNoteOff = state;}
+    public boolean doNoteOn() {return doNoteOn;}
+    public boolean doNoteOff() {return doNoteOff;}
     
     public static class Builder
     {
