@@ -16,7 +16,7 @@ import static net.aeronica.libs.mml.test.MMLUtil.*;
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
-    private static final String mmlString = TestData.MML9.getMML();
+    private static final String mmlString = TestData.MML0.getMML();
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
     private static final NoteState noteState = new NoteState();
@@ -33,7 +33,10 @@ public class testNoteRestTie
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
         //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = "MML@i75t120l8ccccccccddddr4aaaa,l8e&e&e&e&e&e&e&ea&a&a&ar4f+&f+f+&f+;".getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = (
+                "MML@cc.c2c2.;" +
+                "MML@e2.e2e.e;"
+        ).getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -75,9 +78,7 @@ public class testNoteRestTie
                           .minVolume(instState.getMinVolume())
                           .maxVolume(instState.getMaxVolume())
                           .build());
-        MML_LOGGER.info(instState);
-        MML_LOGGER.info(partState);
-        mmlObjs.forEach(p-> MML_LOGGER.info("{} {} {}", mmlObjs.lastIndexOf(p), p.getType(), p.isTied()));
+        //mmlObjs.forEach(p-> MML_LOGGER.info("{} {} {}", String.format("%05d",mmlObjs.lastIndexOf(p)), p.getType(), (p.isTied() ? "&" : "")));
 
         MML_LOGGER.info("");
         MML_LOGGER.info("*** Process Tied Notes ***");
@@ -125,7 +126,6 @@ public class testNoteRestTie
                 }
             }
         }
-
     }
 
     static void doBegin(MMLNavigator nav)
@@ -151,6 +151,8 @@ public class testNoteRestTie
     static void doEnd(MMLNavigator nav)
     {
         MML_LOGGER.info("END");
+        MML_LOGGER.info(instState);
+        MML_LOGGER.info(partState);
         instState.collectDurationTicks(partState.getRunningTicks());
         addMMLObj(new MMLObject.Builder(MMLObject.Type.INST_END)
                           .cumulativeTicks(partState.getRunningTicks())
@@ -250,7 +252,7 @@ public class testNoteRestTie
         if (noteType == MML_NOTE)
             noteState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
         else
-            noteState.setPitch(12);
+            noteState.setPitch(127);
         noteState.setDuration(partState.getMMLLength());
         noteState.setDotted(partState.isDotted());
         int nextType;
