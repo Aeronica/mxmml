@@ -77,7 +77,7 @@ public class MMLParser
                 case '8':
                 case '9': { parseNumberToken(buffer, elementBuffer); elementIndex++; } break;
 
-                case 'M': { parseMMLBegin(buffer, elementBuffer); elementIndex++;  break;}
+                case '@': { parseMMLBegin(buffer, elementBuffer); elementIndex++;  break;}
                 case ',': { parseChord(buffer, elementBuffer); elementIndex++;  break;}
                 case ';': { parseEnd(buffer, elementBuffer); elementIndex++;  break;}
             }
@@ -87,16 +87,19 @@ public class MMLParser
 
     private void parseMMLBegin(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
-        int len = buffer.data.length;
-        if ((this.position + 1 >= len) || (this.position + 2 >= len) || (this.position + 3 >= len)) return;
-        if (
-                buffer.data[this.position + 1] == 'M' &&
-                buffer.data[this.position + 2] == 'L' &&
-                buffer.data[this.position + 3] == '@' )
-        {
-            this.position += 3; // +4, but the outer for-loop will add 1 too
-            setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, 4);
+        int tempPos = this.position;
+        boolean isEndOfRunFound = false;
+        while(!isEndOfRunFound) {
+            tempPos++;
+            if (tempPos >= buffer.data.length) break;
+            switch(buffer.data[tempPos]){
+                case '@': break;
+
+                default    :  { isEndOfRunFound = true; }
+            }
         }
+        setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
+        this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
     private void parseNumberToken(DataByteBuffer buffer, IndexBuffer elementBuffer) {
