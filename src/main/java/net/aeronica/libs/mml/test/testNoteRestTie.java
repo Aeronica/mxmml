@@ -2,7 +2,6 @@ package net.aeronica.libs.mml.test;
 
 import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
-import net.aeronica.libs.mml.oldcore.TestData;
 import net.aeronica.libs.mml.parser.MMLNavigator;
 import net.aeronica.libs.mml.parser.MMLParser;
 
@@ -16,26 +15,24 @@ import static net.aeronica.libs.mml.test.MMLUtil.*;
 @SuppressWarnings("unused")
 public class testNoteRestTie
 {
-    private static final String mmlString = TestData.MML5.getMML();
     private static final InstState instState = new InstState();
     private static final PartState partState = new PartState();
-    private static final NoteState noteState = new NoteState();
-    private static final NoteState restState = new NoteState();
+    private static final TempState tempState = new TempState();
 
     // Collect Notes, Rests, etc.
     private static final List<MMLObject> mmlObjs = new ArrayList<>(1000);
 
     // MIDI Constants
-    private static final double PPQ = 96.0;
+    public static final double PPQ = 480.0;
 
     
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
-        //dataBuffer.data = mmlString.getBytes(StandardCharsets.US_ASCII);
+        //dataBuffer.data = TestData.MML3.getMML().getBytes(StandardCharsets.US_ASCII);
         dataBuffer.data = (
-                "MML@cc.c2c2.;" +
-                "MML@e2.e2e.e;"
+                "MML@l8.o5fa.c;" +
+                "MML@l8.o3a>c.<e;"
         ).getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
@@ -250,13 +247,13 @@ public class testNoteRestTie
     {
         byte noteType = nav.type();
         int prevPitch = partState.getPrevPitch();
-        noteState.init();
+        tempState.init();
         if (noteType == MML_NOTE)
-            noteState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
+            tempState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
         else
-            noteState.setPitch(127);
-        noteState.setDuration(partState.getMMLLength());
-        noteState.setDotted(partState.isDotted());
+            tempState.setPitch(127);
+        tempState.setDuration(partState.getMMLLength());
+        tempState.setDotted(partState.isDotted());
         int nextType;
         do // handle a crazy ass run on accidental sequence +-+---++++ as seen in some whack MML.
         {
@@ -265,7 +262,7 @@ public class testNoteRestTie
             {
                 nav.next();
                 if (noteType == MML_NOTE)
-                    noteState.setAccidental(nav.type());
+                    tempState.setAccidental(nav.type());
                 nextType = peekNextType(nav);
             }
         }
@@ -275,23 +272,23 @@ public class testNoteRestTie
         {
             nav.next();
             if (noteType == MML_NOTE)
-                noteState.setDuration(nav.asInt());
+                tempState.setDuration(nav.asInt());
             else
-                noteState.setPitch(nav.asInt()+12); //MIDI Note
+                tempState.setPitch(nav.asInt()+12); //MIDI Note
             nextType = peekNextType(nav);
         }
         if (nextType == MML_DOT)
         {
             nav.next();
             if (noteType == MML_NOTE)
-                noteState.setDotted(true);
+                tempState.setDotted(true);
         }
 
-        long lengthTicks = durationTicks(noteState.getDuration(), noteState.isDotted());
-        boolean tiedNote = (noteState.getPitch() == prevPitch && partState.isTied());
+        long lengthTicks = durationTicks(tempState.getDuration(), tempState.isDotted());
+        boolean tiedNote = (tempState.getPitch() == prevPitch && partState.isTied());
 
         addMMLObj(new MMLObject.Builder(MMLObject.Type.NOTE)
-                          .midiNote(noteState.getPitch())
+                          .midiNote(tempState.getPitch())
                           .startingTicks(partState.getRunningTicks())
                           .lengthTicks(lengthTicks)
                           .volume(partState.getVolume())
@@ -300,10 +297,10 @@ public class testNoteRestTie
 
         partState.accumulateTicks(lengthTicks);
         if (noteType == MML_NOTE)
-            MML_LOGGER.info("NOTE " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+            MML_LOGGER.info("NOTE " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
         else
-            MML_LOGGER.info("MIDI " + noteState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
-        partState.setPrevPitch(noteState.getPitch());
+            MML_LOGGER.info("MIDI " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        partState.setPrevPitch(tempState.getPitch());
         partState.setTied(false);
 
         if (nav.hasNext())
@@ -316,9 +313,9 @@ public class testNoteRestTie
         partState.setTied(false);
         partState.setPrevPitch(-1);
 
-        restState.init();
-        restState.setDuration(partState.getMMLLength());
-        restState.setDotted(partState.isDotted());
+        tempState.init();
+        tempState.setDuration(partState.getMMLLength());
+        tempState.setDotted(partState.isDotted());
         int nextType;
         // RESTs don't really need these, but I've seen MML where people treat them like notes. example: r&r+2.
         //  I'm guessing they simply silence notes that way for testing.
@@ -336,18 +333,18 @@ public class testNoteRestTie
         if (nextType == MML_NUMBER)
         {
             nav.next();
-            restState.setDuration(nav.asInt());
+            tempState.setDuration(nav.asInt());
             nextType = peekNextType(nav);
         }
         if (nextType == MML_DOT)
         {
             nav.next();
-            restState.setDotted(true);
+            tempState.setDotted(true);
         }
-        MML_LOGGER.info("REST " + restState);
+        MML_LOGGER.info("REST " + tempState);
 
         // Do rest Processing HERE ****
-        long lengthTicks = durationTicks(restState.getDuration(), restState.isDotted());
+        long lengthTicks = durationTicks(tempState.getDuration(), tempState.isDotted());
 
         addMMLObj(new MMLObject.Builder(MMLObject.Type.REST)
             .startingTicks(partState.getRunningTicks())

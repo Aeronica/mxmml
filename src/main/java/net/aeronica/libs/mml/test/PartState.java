@@ -34,7 +34,7 @@ public class PartState
     @Override
     public String toString()
     {
-        return "@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + ", tie=" + tied + " ,runningTicks=" + runningTicks;
+        return "@PartState: oct=" + octave + ", vol=" + volume + ", mLen=" + mmlLength + ", tie=" + tied + " dot=" + dotted +" ,runTicks=" + runningTicks + ", prevPitch=" + prevPitch;
     }
 
     public int getVolume()

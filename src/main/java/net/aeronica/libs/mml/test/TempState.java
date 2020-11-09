@@ -2,14 +2,14 @@ package net.aeronica.libs.mml.test;
 
 import static net.aeronica.libs.mml.parser.ElementTypes.MML_SHARP;
 
-public class NoteState
+public class TempState
 {
     private int pitch;
     private int accidental;
     private int duration;
     private boolean dotted;
 
-    public NoteState()
+    public TempState()
     {
         init();
     }
@@ -17,8 +17,8 @@ public class NoteState
     @Override
     public String toString()
     {
-        return "@NoteState: base note:" + pitch + ", acc: " + accidental + ", final note: " + (pitch + accidental)
-                + ", duration: " + duration + ", dot: " + dotted;
+        return "@tempState: base pitch=" + pitch + ", acc=" + accidental + ", final pitch=" + (pitch + accidental)
+                + ", mLen=" + duration + ", dot=" + dotted;
     }
 
     void init()
