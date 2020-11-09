@@ -12,6 +12,17 @@ public class DataByteBuffer
         /* NOP */
     }
 
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < data.length; i++)
+        {
+            sb.append(((char)data[i]));
+        }
+        return sb.toString();
+    }
+
     public DataByteBuffer(byte[] data)
     {
         this.data = data;
