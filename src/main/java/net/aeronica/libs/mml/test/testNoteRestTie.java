@@ -29,11 +29,11 @@ public class testNoteRestTie
     public static void main(String[] args)
     {
         DataByteBuffer dataBuffer = new DataByteBuffer();
-        //dataBuffer.data = TestData.MML3.getMML().getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.data = (
-                "MML@l8.o5fa.c;" +
-                "MML@l8.o3a>c.<e;"
-        ).getBytes(StandardCharsets.US_ASCII);
+        dataBuffer.data = TestData.MML3.getMML().getBytes(StandardCharsets.US_ASCII);
+//        dataBuffer.data = (
+//                "MML@l8.o5fa.c;" +
+//                "MML@l8.o3a>c.<e;"
+//        ).getBytes(StandardCharsets.US_ASCII);
         dataBuffer.length = dataBuffer.data.length;
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
@@ -131,7 +131,8 @@ public class testNoteRestTie
         instState.init();
         partState.init();
         addMMLObj(new MMLObject.Builder(MMLObject.Type.INST_BEGIN).build());
-        nav.next();
+        if (nav.hasNext())
+            nav.next();
     }
 
     static void doChord(MMLNavigator nav)
@@ -142,7 +143,8 @@ public class testNoteRestTie
                           .cumulativeTicks(partState.getRunningTicks())
                           .build());
         partState.init();
-        nav.next();
+        if (nav.hasNext())
+            nav.next();
     }
 
     static void doEnd(MMLNavigator nav)
@@ -156,7 +158,8 @@ public class testNoteRestTie
                           .build());
         instState.init();
         partState.init();
-        nav.next();
+        if (nav.hasNext())
+            nav.next();
     }
 
     static void doCommand(MMLNavigator nav)
@@ -165,7 +168,7 @@ public class testNoteRestTie
         if (nav.hasNext())
         {
             nav.next();
-            if (nav.type() == MML_NUMBER)
+            if (nav.type() == MML_NUMBER && nav.asInt() >= 0)
             {
                 int value = nav.asInt();
                 switch (type)
@@ -195,8 +198,9 @@ public class testNoteRestTie
                         break;
                     case MML_VOLUME: partState.setVolume(value); break;
                 }
-                nav.next();
             }
+            if (nav.hasNext())
+                nav.next();
         }
     }
 
@@ -205,7 +209,7 @@ public class testNoteRestTie
         if (nav.hasNext())
         {
             nav.next();
-            if (nav.type() == MML_NUMBER)
+            if (nav.type() == MML_NUMBER && nav.asInt() >= 0)
             {
                 int value = (nav.asInt());
                 partState.setMMLLength(value, false);
@@ -217,7 +221,8 @@ public class testNoteRestTie
                     if (nav.hasNext())
                         nav.next();
                 }
-            }
+            } else if (nav.hasNext())
+                nav.next();
         }
     }
 
@@ -243,6 +248,10 @@ public class testNoteRestTie
             nav.next();
     }
 
+    /**
+     * Process Notes 'CDEFGAB' or MIDI 'N'
+     * @param nav navigator reference
+     */
     static void doNote(MMLNavigator nav)
     {
         byte noteType = nav.type();
@@ -251,7 +260,7 @@ public class testNoteRestTie
         if (noteType == MML_NOTE)
             tempState.setPitch(getMIDINote(nav.asChar(), partState.getOctave()));
         else
-            tempState.setPitch(127);
+            tempState.setPitch(127); // N<n> MIDI Note
         tempState.setDuration(partState.getMMLLength());
         tempState.setDotted(partState.isDotted());
         int nextType;
@@ -271,10 +280,11 @@ public class testNoteRestTie
         if (nextType == MML_NUMBER)
         {
             nav.next();
-            if (noteType == MML_NOTE)
-                tempState.setDuration(nav.asInt());
-            else
-                tempState.setPitch(nav.asInt()+12); //MIDI Note
+            if (nav.asInt() >= 0)
+                if (noteType == MML_NOTE)
+                    tempState.setDuration(nav.asInt());
+                else
+                    tempState.setPitch(nav.asInt() + 12); //MIDI Note
             nextType = peekNextType(nav);
         }
         if (nextType == MML_DOT)
@@ -333,7 +343,8 @@ public class testNoteRestTie
         if (nextType == MML_NUMBER)
         {
             nav.next();
-            tempState.setDuration(nav.asInt());
+            if (nav.asInt() >= 0)
+                tempState.setDuration(nav.asInt());
             nextType = peekNextType(nav);
         }
         if (nextType == MML_DOT)
