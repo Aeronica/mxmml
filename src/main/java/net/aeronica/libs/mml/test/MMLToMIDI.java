@@ -2,6 +2,7 @@ package net.aeronica.libs.mml.test;
 
 import javax.sound.midi.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,14 +22,8 @@ public class MMLToMIDI
     private final Set<Integer> packedPresets = new HashSet<>();
     private int channel;
     private int track;
-    
-    private final List<MMLObject> mmlObjects;
 
-    public MMLToMIDI(List<MMLObject> mmlObjects)
-    {
-        this.mmlObjects = mmlObjects;
-        processMObjects(mmlObjects);
-    }
+    public MMLToMIDI() { /* NOP */ }
 
     public Sequence getSequence() {return sequence;}
     
@@ -60,6 +55,8 @@ public class MMLToMIDI
                     case SUSTAIN:
                     case INST_BEGIN:
                     case REST:
+                    case DONE:
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case TEMPO:
@@ -68,23 +65,24 @@ public class MMLToMIDI
                         break;
 
                     case INST:
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         addInstrument(mmo, tracks[track], channel, ticksOffset);
                         break;
 
                     case PART:
                         nextTrack();
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case NOTE:
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         addNote(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case INST_END:
                         nextTrack();
                         nextChannel();
-                        break;
-
-                    case DONE:
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     default:
@@ -136,7 +134,15 @@ public class MMLToMIDI
         if (mmo.doNoteOn())
             tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
         if (mmo.doNoteOff())
-            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset));
+    }
+
+    private void addText(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    {
+        String onOff = String.format("%s%s", mmo.doNoteOn() ? "^" : "-", mmo.doNoteOff() ? "v" : "-");
+        String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
+        String text = String.format("[T:%02d C:%02d %s %s]{ %s }", track, channel, mmo.getType().name(), pitch, mmo.getText());
+        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
     }
 
     private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
@@ -187,7 +193,7 @@ public class MMLToMIDI
     private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
     {
         MetaMessage msg = new MetaMessage();
-        byte[] data = text.getBytes();
+        byte[] data = text != null ? text.getBytes(StandardCharsets.US_ASCII) : "".getBytes();
         msg.setMessage(0x01, data, data.length);
         return new MidiEvent(msg, tick);
     }

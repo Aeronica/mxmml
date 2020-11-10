@@ -74,7 +74,7 @@ public class PartState
         this.dotted = dotted;
     }
 
-    void accumulateTicks(long n) {this.runningTicks = this.runningTicks + n;}
+    void accumulateTicks(long n) {this.runningTicks+=n;}
 
     long getRunningTicks() {return runningTicks;}
 

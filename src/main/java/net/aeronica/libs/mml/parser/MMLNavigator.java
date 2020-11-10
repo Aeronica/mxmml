@@ -37,6 +37,10 @@ public class MMLNavigator
 
     // Parser element location methods
 
+    /**
+     * For getting the index of the raw data such that we can identify a single character in the source.
+     * @return the data buffer index for this character/byte.
+     */
     public int position()
     {
         return this.elementBuffer.position[this.elementIndex];
@@ -80,10 +84,23 @@ public class MMLNavigator
         return -1;
     }
 
+    /**
+     * Only useful with regard to MML notes.
+     * @return note characters only [CcDdEeFfGgAaBb] else null char.
+     */
     public char asChar()
     {
         if (ElementTypes.MML_NOTE == type())
             return (char) this.buffer.data[this.elementBuffer.position[this.elementIndex]];
         return 0;
+    }
+
+    /**
+     * For collecting characters for debugging purposes.
+     * @return the source data character.
+     */
+    public char anyChar()
+    {
+        return (char) this.buffer.data[this.elementBuffer.position[this.elementIndex]];
     }
 }

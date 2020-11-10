@@ -40,12 +40,12 @@ public class PlayMIDI implements MetaEventListener
         if (event.getType() == 81)
         {
             int tempo = decodeTempo(event);
-            net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER.info("{\"Tempo\": " + tempo + "}");
+            System.out.println("{\"Tempo\": " + tempo + "}");
         }
         if (event.getType() == 1)
         {
             String text = decodeText(event);
-            net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER.info(text);
+            System.out.println(text);
         }
 
     }
