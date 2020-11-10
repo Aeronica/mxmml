@@ -35,7 +35,7 @@ public class MMLToMIDI
     public void processMObjects(List<MMLObject> mmlObjects)
     {
         channel = 0;
-        track = 0;
+        track = 1;
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
