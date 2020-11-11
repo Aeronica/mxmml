@@ -4,7 +4,7 @@ import net.aeronica.libs.mml.core.DataByteBuffer;
 import net.aeronica.libs.mml.core.IndexBuffer;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
-public class MMLParser
+public class MMLLexer
 {
     private int    position     = 0;
     private int    elementIndex = 0;
