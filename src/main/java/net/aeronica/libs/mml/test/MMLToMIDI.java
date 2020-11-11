@@ -53,7 +53,7 @@ public class MMLToMIDI
                 switch (mmo.getType())
                 {
                     case SUSTAIN:
-                    case INST_BEGIN:
+                    case INIT:
                     case REST:
                     case DONE:
                         addText(mmo, tracks, track, channel, ticksOffset);
@@ -79,7 +79,7 @@ public class MMLToMIDI
                         addNote(mmo, tracks, track, channel, ticksOffset);
                         break;
 
-                    case INST_END:
+                    case STOP:
                         nextTrack();
                         nextChannel();
                         addText(mmo, tracks, track, channel, ticksOffset);
@@ -141,7 +141,8 @@ public class MMLToMIDI
     {
         String onOff = String.format("%s%s", mmo.doNoteOn() ? "^" : "-", mmo.doNoteOff() ? "v" : "-");
         String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
-        String text = String.format("[T:%02d C:%02d %s %s]{ %s }", track, channel, mmo.getType().name(), pitch, mmo.getText());
+        String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
+                                    mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
     }
 

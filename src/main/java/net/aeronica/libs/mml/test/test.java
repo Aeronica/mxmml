@@ -5,8 +5,8 @@ import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.oldcore.MMLUtil;
 import net.aeronica.libs.mml.oldcore.TestData;
 import net.aeronica.libs.mml.parser.ElementTypes;
+import net.aeronica.libs.mml.parser.MMLLexer;
 import net.aeronica.libs.mml.parser.MMLNavigator;
-import net.aeronica.libs.mml.parser.MMLParser;
 
 import java.nio.charset.StandardCharsets;
 
@@ -24,7 +24,7 @@ public class test
 
         IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
 
-        MMLParser parser = new MMLParser();
+        MMLLexer parser = new MMLLexer();
         parser.parse(dataBuffer, elementBuffer);
 
         MMLNavigator navigator = new MMLNavigator(dataBuffer, elementBuffer);
