@@ -156,5 +156,5 @@ public class MMLObject
             // basic validations
         }
     }
-    public enum Type { INST_BEGIN, TEMPO, SUSTAIN, INST, PART, NOTE, REST, INST_END, DONE }
+    public enum Type {INIT, TEMPO, SUSTAIN, INST, PART, NOTE, REST, STOP, DONE }
 }
