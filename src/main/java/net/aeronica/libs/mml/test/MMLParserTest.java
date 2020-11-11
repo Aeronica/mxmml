@@ -1,6 +1,6 @@
 package net.aeronica.libs.mml.test;
 
-public class testNoteRestTie
+public class MMLParserTest
 {
     public static void main(String[] args)
     {
