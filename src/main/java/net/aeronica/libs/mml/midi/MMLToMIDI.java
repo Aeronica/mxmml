@@ -1,17 +1,25 @@
-package net.aeronica.libs.mml.test;
+package net.aeronica.libs.mml.midi;
 
-import javax.sound.midi.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import net.aeronica.libs.mml.parser.MMLObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Patch;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Track;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static net.aeronica.libs.mml.oldcore.MMLUtil.*;
+import static net.aeronica.libs.mml.midi.MIDIHelper.*;
+import static net.aeronica.libs.mml.oldcore.MMLUtil.packedPreset2Patch;
+import static net.aeronica.libs.mml.oldcore.MMLUtil.smartClampMIDI;
 
 public class MMLToMIDI
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
     // 8 players with 10 parts each = 80 parts.
@@ -27,6 +35,7 @@ public class MMLToMIDI
 
     public Sequence getSequence() {return sequence;}
     
+    @SuppressWarnings("unused")
     public List<Integer> getPackedPresets()
     {
         return new ArrayList<>(packedPresets);
@@ -86,12 +95,12 @@ public class MMLToMIDI
                         break;
 
                     default:
-                        MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
+                        LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
             }
         } catch (InvalidMidiDataException e)
         {
-            MML_LOGGER.error("MMLToMIDI#processMObjects failed!");
+            LOGGER.error("MMLToMIDI#processMObjects failed!");
         }
     }
 
@@ -146,56 +155,56 @@ public class MMLToMIDI
         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
     }
 
-    private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
-        return new MidiEvent(msg, tick);
-    }
-
-    private MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
-        return new MidiEvent(msg, tick);
-    }
-    
-    private MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
-        return new MidiEvent(msg, tick);
-    }
-    
-    private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
-        return new MidiEvent(msg, tick);
-    }
-
-    private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
-        return new MidiEvent(msg, tick);
-    }
-
-    private MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
-    {
-        MetaMessage msg = new MetaMessage();
-        byte[] data = ByteBuffer.allocate(4).putInt(1000000 * 60 / tempo).array();
-        data[0] = data[1];
-        data[1] = data[2];
-        data[2] = data[3];
-        msg.setMessage(0x51, data, 3);
-        return new MidiEvent(msg, tick);
-    }
-
-    @SuppressWarnings("unused")
-    private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
-    {
-        MetaMessage msg = new MetaMessage();
-        byte[] data = text != null ? text.getBytes(StandardCharsets.US_ASCII) : "".getBytes();
-        msg.setMessage(0x01, data, data.length);
-        return new MidiEvent(msg, tick);
-    }
+//    private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
+//    {
+//        ShortMessage msg = new ShortMessage();
+//        msg.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    private MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
+//    {
+//        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    private MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
+//    {
+//        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
+//    {
+//        ShortMessage msg = new ShortMessage();
+//        msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
+//    {
+//        ShortMessage msg = new ShortMessage();
+//        msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    private MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
+//    {
+//        MetaMessage msg = new MetaMessage();
+//        byte[] data = ByteBuffer.allocate(4).putInt(1000000 * 60 / tempo).array();
+//        data[0] = data[1];
+//        data[1] = data[2];
+//        data[2] = data[3];
+//        msg.setMessage(0x51, data, 3);
+//        return new MidiEvent(msg, tick);
+//    }
+//
+//    @SuppressWarnings("unused")
+//    private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
+//    {
+//        MetaMessage msg = new MetaMessage();
+//        byte[] data = text != null ? text.getBytes(StandardCharsets.US_ASCII) : "".getBytes();
+//        msg.setMessage(0x01, data, data.length);
+//        return new MidiEvent(msg, tick);
+//    }
 }

@@ -1,6 +1,6 @@
-package net.aeronica.libs.mml.test;
+package net.aeronica.libs.mml.parser;
 
-import static net.aeronica.libs.mml.test.MMLUtil.clamp;
+import static net.aeronica.libs.mml.parser.MMLUtil.clamp;
 
 public class PartState
 {

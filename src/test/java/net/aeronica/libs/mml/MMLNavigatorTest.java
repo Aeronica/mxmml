@@ -1,10 +1,10 @@
 package net.aeronica.libs.mml;
 
-import net.aeronica.libs.mml.core.DataByteBuffer;
-import net.aeronica.libs.mml.core.IndexBuffer;
 import net.aeronica.libs.mml.parser.ElementTypes;
 import net.aeronica.libs.mml.parser.MMLLexer;
 import net.aeronica.libs.mml.parser.MMLNavigator;
+import net.aeronica.libs.mml.util.DataByteBuffer;
+import net.aeronica.libs.mml.util.IndexBuffer;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;

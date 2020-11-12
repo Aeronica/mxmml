@@ -1,7 +1,7 @@
 package net.aeronica.libs.mml.parser;
 
-import net.aeronica.libs.mml.core.DataByteBuffer;
-import net.aeronica.libs.mml.core.IndexBuffer;
+import net.aeronica.libs.mml.util.DataByteBuffer;
+import net.aeronica.libs.mml.util.IndexBuffer;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;

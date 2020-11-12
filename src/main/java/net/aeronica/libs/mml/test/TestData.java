@@ -1,11 +1,13 @@
 package net.aeronica.libs.mml.test;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER;
-
+@SuppressWarnings("unused")
 public enum TestData
 {
     MML0(0, "Mario", "MML@i6v13r4>e32r16.d+32r16.d16c16r8.<<g8r4r16>>e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8r2<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8,v10r1r4.e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r8.r32e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r16.c2.,v10r1o2g8.&g32r32>c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8r1r1c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8;"),
@@ -37,10 +39,10 @@ public enum TestData
     						  "MML@i1542v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v8>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34d+a+eb+fb+g>d<ca+faa+<f<a+r.v11l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv11<arar>crcrn46rcrl8<<gaa+al4gr>a+ra+ra+ra+<f8rf+8r2g8r>c.r2arar>crcrn46rcr1<<a+a+bb>ccaarbra+r2.gv8a+.a+2&a+8dr2.gg<ffr1>a+a+a+a+dr2.ggc+c+r1r1rdr2gg<ffa+r2.v9d+>g<en46fn46g>b<c>g<f>f<a+r2.l8rv12dddd4r1r4.cccc4r1r4cr4cr2cr4cr2cr4cr4.cr4.cr2l4fd+d>b+rbrbra+ra+rc+cr<fd+d>b+rbrbr2.c+cr1<f8d+8d>b+rbrbra+ra+ac+c<fa+8ra+8r.a8r.g+8r.g8,l1.rrrrrrrrrr2.v9l4<frer1v7e.d+2&d+8r1r1r1eed+d+l1.rrrrrr4v9e4rrrrrrrr2r2.v11l4f+rfrfrfrer1.rf+rfrfr1r1.rf+rfrfrere;"+
     					      "MML@i1554v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v7>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34v9d+a+eb+fb+g>d<ca+faa+<f<a+r.v13l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv9<frfrf+rf+rgrf+r1rerererer1r1rfrfrf+rf+rgrf+r1r1.ddrgrgr2.cv7g.f+2&f+8r1ccr1.ggf+f+r1cc<f+f+r1r1r1>ccr1.rv9d+rgrfrfrd+rd+l1.rrrrrrr2.v11l4argrgrgrgr1.rargrgr1r1.rargrgrgrgd,;"),
 	;
-
-	private int index;
-	private String title;
-	private String mml;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final int index;
+	private final String title;
+	private final String mml;
 
 	TestData(int index, String title, String mml) {
 		this.index = index;
@@ -84,7 +86,7 @@ public enum TestData
 	}
 
 	public static void main(String[] args) {
-		MML_LOGGER.info(TestData.MML5);
-		MML_LOGGER.info(TestData.getMML(6));
+		LOGGER.info(TestData.MML5);
+		LOGGER.info(TestData.getMML(6));
 	}
 }

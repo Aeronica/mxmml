@@ -1,19 +1,19 @@
-package net.aeronica.libs.mml.test;
+package net.aeronica.libs.mml.parser;
 
-import net.aeronica.libs.mml.core.DataByteBuffer;
-import net.aeronica.libs.mml.core.IndexBuffer;
-import net.aeronica.libs.mml.parser.MMLLexer;
-import net.aeronica.libs.mml.parser.MMLNavigator;
+import net.aeronica.libs.mml.util.DataByteBuffer;
+import net.aeronica.libs.mml.util.IndexBuffer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.aeronica.libs.mml.parser.ElementTypes.*;
-import static net.aeronica.libs.mml.test.MMLUtil.MML_LOGGER;
-import static net.aeronica.libs.mml.test.MMLUtil.getMIDINote;
+import static net.aeronica.libs.mml.parser.MMLUtil.getMIDINote;
 
 public class MMLParser
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     // MIDI Constants
     public static final double PPQ = 480.0;
     // State Collection
@@ -94,11 +94,11 @@ public class MMLParser
                           .text("EOF")
                           .build());
 
-        MML_LOGGER.info("Longest running ticks: {}", this::getLongestRunningTicks);
-        //mmlObjs.forEach(p-> MML_LOGGER.info("{} {} {}", String.format("%05d",mmlObjs.lastIndexOf(p)), p.getType(), (p.isTied() ? "&" : "")));
+        LOGGER.debug("Longest running ticks: {}", this::getLongestRunningTicks);
+        //mmlObjs.forEach(p-> LOGGER.debug("{} {} {}", String.format("%05d",mmlObjs.lastIndexOf(p)), p.getType(), (p.isTied() ? "&" : "")));
 
-        MML_LOGGER.info("");
-        MML_LOGGER.info("*** Process Tied Notes ***");
+        LOGGER.debug("");
+        LOGGER.debug("*** Process Tied Notes ***");
         processTiedNotes();
     }
 
@@ -114,28 +114,28 @@ public class MMLParser
             {
                 if (mo.isTied() && !lastTied) // End of tie
                 {
-                    MML_LOGGER.info("{} End of tie", mo.getMidiNote());
+                    LOGGER.debug("{} End of tie", mo.getMidiNote());
                     lastTied = true;
                     mo.setDoNoteOn(false);
                     mo.setDoNoteOff(true);
                 }
                 else if (mo.isTied() && lastTied) // Mid tie
                 {
-                    MML_LOGGER.info("{}    Mid tie", mo.getMidiNote());
+                    LOGGER.debug("{}    Mid tie", mo.getMidiNote());
                     lastTied = true;
                     mo.setDoNoteOn(false);
                     mo.setDoNoteOff(false);
                 }
                 else if (!mo.isTied() && lastTied) // Begin tie
                 {
-                    MML_LOGGER.info("{}  Begin tie", mo.getMidiNote());
+                    LOGGER.debug("{}  Begin tie", mo.getMidiNote());
                     lastTied = false;
                     mo.setDoNoteOn(true);
                     mo.setDoNoteOff(false);
                 }
                 else if (!mo.isTied() && !lastTied)
                 {
-                    MML_LOGGER.info("{}     No tie", mo.getMidiNote());
+                    LOGGER.debug("{}     No tie", mo.getMidiNote());
                     lastTied = false;
                     mo.setDoNoteOn(true);
                     mo.setDoNoteOff(true);
@@ -147,7 +147,7 @@ public class MMLParser
     private void doBegin(MMLNavigator nav)
     {
         collectDataToText(nav.asString());
-        MML_LOGGER.info("BEGIN");
+        LOGGER.debug("BEGIN");
         instState.init();
         partState.init();
         addMMLObj(new MMLObject.Builder(MMLObject.Type.INIT).startingTicks(partState.getRunningTicks()).text(nav.asString()).build());
@@ -159,7 +159,7 @@ public class MMLParser
     private void doChord(MMLNavigator nav)
     {
         collectDataToText(nav.anyChar());
-        MML_LOGGER.info("CHORD");
+        LOGGER.debug("CHORD");
         instState.collectDurationTicks(partState.getRunningTicks());
         addMMLObj(new MMLObject.Builder(MMLObject.Type.PART)
                           .text(getText())
@@ -175,9 +175,9 @@ public class MMLParser
     private void doEnd(MMLNavigator nav)
     {
         collectDataToText(nav.anyChar());
-        MML_LOGGER.info("END");
-        MML_LOGGER.info(instState);
-        MML_LOGGER.info(partState);
+        LOGGER.debug("END");
+        LOGGER.debug(instState);
+        LOGGER.debug(partState);
         instState.collectDurationTicks(partState.getRunningTicks());
         addMMLObj(new MMLObject.Builder(MMLObject.Type.STOP)
                           .cumulativeTicks(partState.getRunningTicks())
@@ -276,7 +276,7 @@ public class MMLParser
         if (peekValue == MML_NOTE || peekValue == MML_MIDI)
         {
             partState.setTied(true);
-            MML_LOGGER.info(" &");
+            LOGGER.debug(" &");
         }
         if (nav.hasNext())
             nav.next();
@@ -352,7 +352,7 @@ public class MMLParser
         partState.setTied(false);
 
 
-        MML_LOGGER.info("NOTE { " + getText() + " }, " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        LOGGER.debug("NOTE { " + getText() + " }, " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
         clearText();
         if (nav.hasNext())
             nav.next();
@@ -416,7 +416,7 @@ public class MMLParser
         partState.setPrevPitch(tempState.getPitch());
         partState.setTied(false);
 
-        MML_LOGGER.info("MIDI { " + getText() + " }, " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
+        LOGGER.debug("MIDI { " + getText() + " }, " + tempState + (tiedNote ? " *** Tied to Previous Note ***" : ""));
         clearText();
         if (nav.hasNext())
             nav.next();
@@ -473,7 +473,7 @@ public class MMLParser
                           .build());
 
         partState.accumulateTicks(lengthTicks);
-        MML_LOGGER.info("REST { " + getText() + " }, " + tempState);
+        LOGGER.debug("REST { " + getText() + " }, " + tempState);
         clearText();
         if (nav.hasNext())
             nav.next();

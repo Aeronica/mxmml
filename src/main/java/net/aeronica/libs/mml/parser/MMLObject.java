@@ -1,4 +1,4 @@
-package net.aeronica.libs.mml.test;
+package net.aeronica.libs.mml.parser;
 
 /*
  * MML Object builder class

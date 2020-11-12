@@ -1,21 +1,22 @@
 package net.aeronica.libs.mml.test;
 
-import net.aeronica.libs.mml.oldcore.MMLUtil;
-import net.aeronica.libs.mml.oldcore.TestAntlr;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.midi.*;
 import java.net.URL;
 
 public class PlayMIDI implements MetaEventListener
 {
-    private static URL urlSoundFont = TestAntlr.class.getResource("/mxtune_v2.sf2");
-    private Soundbank soundbank;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final URL urlSoundFont = PlayMIDI.class.getResource("/mxtune_v2.sf2");
     private Sequencer sequencer;
     private Synthesizer synthesizer;
 
     PlayMIDI() {/* NOP */}
 
-     // TEMPO = 81 End of Track = 47
+    // TEMPO = 81 End of Track = 47
     @Override
     public void meta(MetaMessage event)
     {
@@ -24,15 +25,16 @@ public class PlayMIDI implements MetaEventListener
             sequencer.stop();
             sequencer.setMicrosecondPosition(0L);
             sequencer.removeMetaEventListener(this);
-            net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER.info("MetaMessage EOS event");
+            LOGGER.info("MetaMessage EOS event");
             try
             {
                 Thread.sleep(250);
             } catch (InterruptedException e)
             {
-                net.aeronica.libs.mml.oldcore.MMLUtil.MML_LOGGER.error(e);
+                LOGGER.error(e);
                 Thread.currentThread().interrupt();
-            } finally {
+            } finally
+            {
                 if (sequencer != null && sequencer.isOpen()) sequencer.close();
                 if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
             }
@@ -82,7 +84,7 @@ public class PlayMIDI implements MetaEventListener
     {
         try
         {
-            soundbank = MidiSystem.getSoundbank(urlSoundFont);
+            Soundbank soundbank = MidiSystem.getSoundbank(urlSoundFont);
             synthesizer = MidiSystem.getSynthesizer();
 
             synthesizer.open();
@@ -111,7 +113,7 @@ public class PlayMIDI implements MetaEventListener
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
     }
 }

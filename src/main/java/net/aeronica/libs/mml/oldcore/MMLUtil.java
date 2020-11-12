@@ -1,6 +1,5 @@
 package net.aeronica.libs.mml.oldcore;
 
-import net.aeronica.libs.mml.core.ParserException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +11,7 @@ import javax.sound.midi.Patch;
 public enum MMLUtil
 {
     ;
-    public static final Logger MML_LOGGER = LogManager.getLogger("MML Core");
+    static final Logger MML_LOGGER = LogManager.getLogger("MML Core");
     public static final int MAX_TRACKS = 10;
 
     /* int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */

@@ -1,5 +1,8 @@
 package net.aeronica.libs.mml.test;
 
+import net.aeronica.libs.mml.midi.MMLToMIDI;
+import net.aeronica.libs.mml.parser.MMLParser;
+
 public class MMLParserTest
 {
     public static void main(String[] args)
