@@ -58,6 +58,23 @@ public class MMLNavigator
 
     // Data extraction support methods
 
+    public String asString()
+    {
+        byte elementType = this.elementBuffer.type[this.elementIndex];
+        if (elementType == ElementTypes.MML_BEGIN)
+        {
+            try
+            {
+                return new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                return "";
+            }
+        }
+        return "";
+    }
+
     /**
      * Primitive integer bounded to 5 significant digits. -1 as invalid data.
      * @return -1 for invalid, 0<->99999
@@ -65,20 +82,17 @@ public class MMLNavigator
     public int asInt()
     {
         byte numberType = this.elementBuffer.type[this.elementIndex];
-        switch (numberType)
+        if (numberType == ElementTypes.MML_NUMBER)
         {
-            case ElementTypes.MML_NUMBER:
+            try
             {
-                try
-                {
-                    String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
-                    int length = number.length();
-                    if (length >= 1 & length <=5)
-                        return Integer.parseInt(number);
-                } catch (NumberFormatException | UnsupportedEncodingException e)
-                {
-                    return -1;
-                }
+                String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
+                int length = number.length();
+                if (length >= 1 & length <= 5)
+                    return Integer.parseInt(number);
+            } catch (NumberFormatException | UnsupportedEncodingException e)
+            {
+                return -1;
             }
         }
         return -1;

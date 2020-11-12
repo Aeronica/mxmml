@@ -65,8 +65,8 @@ public class MMLToMIDI
                         break;
 
                     case INST:
-                        addText(mmo, tracks, track, channel, ticksOffset);
                         addInstrument(mmo, tracks[track], channel, ticksOffset);
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case PART:
@@ -75,8 +75,8 @@ public class MMLToMIDI
                         break;
 
                     case NOTE:
-                        addText(mmo, tracks, track, channel, ticksOffset);
                         addNote(mmo, tracks, track, channel, ticksOffset);
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case STOP:

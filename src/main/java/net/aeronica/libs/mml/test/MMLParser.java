@@ -146,11 +146,12 @@ public class MMLParser
 
     private void doBegin(MMLNavigator nav)
     {
-        collectDataToText(nav.anyChar());
+        collectDataToText(nav.asString());
         MML_LOGGER.info("BEGIN");
         instState.init();
         partState.init();
-        addMMLObj(new MMLObject.Builder(MMLObject.Type.INIT).startingTicks(partState.getRunningTicks()).text("@").build());
+        addMMLObj(new MMLObject.Builder(MMLObject.Type.INIT).startingTicks(partState.getRunningTicks()).text(nav.asString()).build());
+        clearText();
         if (nav.hasNext())
             nav.next();
     }
@@ -211,6 +212,7 @@ public class MMLParser
                                           .startingTicks(partState.getRunningTicks())
                                           .text(getText())
                                           .build());
+                        clearText();
                         break;
                     case MML_OCTAVE:
                         partState.setOctave(value);
@@ -515,6 +517,11 @@ public class MMLParser
     private void collectDataToText(char c)
     {
         sb.append(c);
+    }
+
+    private void collectDataToText(String s)
+    {
+        sb.append(s);
     }
 
     private void collectDataToText(int number)
