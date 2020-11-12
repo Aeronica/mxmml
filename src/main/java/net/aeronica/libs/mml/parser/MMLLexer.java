@@ -77,7 +77,7 @@ public class MMLLexer
                 case '8':
                 case '9': { parseNumberToken(buffer, elementBuffer); elementIndex++; } break;
 
-                case '@': { parseMMLBegin(buffer, elementBuffer); elementIndex++;  break;}
+                case 'M': { parseMMLBegin(buffer, elementBuffer); elementIndex++;  break;}
                 case ',': { parseChord(buffer, elementBuffer); elementIndex++;  break;}
                 case ';': { parseEnd(buffer, elementBuffer); elementIndex++;  break;}
             }
@@ -88,18 +88,31 @@ public class MMLLexer
     private void parseMMLBegin(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         int tempPos = this.position;
-        boolean isEndOfRunFound = false;
-        while(!isEndOfRunFound) {
-            tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case '@': break;
-
-                default    :  { isEndOfRunFound = true; }
+        tempPos++;
+        if (!(tempPos >= buffer.data.length))
+            if (buffer.data[tempPos] == 'M')
+            {
+                tempPos++;
+                if (!(tempPos >= buffer.data.length))
+                {
+                    if (buffer.data[tempPos] == 'L')
+                    {
+                        tempPos++;
+                        if (!(tempPos >= buffer.data.length))
+                        {
+                            if (buffer.data[tempPos] == '@')
+                            {
+                                tempPos++;
+                                if (!(tempPos >= buffer.data.length))
+                                {
+                                    setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
+                                    this.position = tempPos - 1; // -1 because the outer for-loop adds 1 to the position too
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
-        setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
-        this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
     }
 
     private void parseNumberToken(DataByteBuffer buffer, IndexBuffer elementBuffer) {
