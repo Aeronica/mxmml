@@ -18,16 +18,14 @@ public class MMLNavigatorTest
     @Test
     public void testWithParser()
     {
-        DataByteBuffer dataBuffer = new DataByteBuffer();
-        dataBuffer.data = "MML@V10T240C+;".getBytes(StandardCharsets.US_ASCII);
-        dataBuffer.length = dataBuffer.data.length;
+        DataByteBuffer dataBuffer = new DataByteBuffer("MML@V10T240C+;".getBytes(StandardCharsets.US_ASCII));
 
-        IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
+        IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.getLength(), true);
 
         MMLLexer parser = new MMLLexer();
 
         parser.parse(dataBuffer, elementBuffer);
-        assertEquals(8, elementBuffer.count);
+        assertEquals(8, elementBuffer.getCount());
 
         assertsOnNavigator(dataBuffer, elementBuffer);
     }

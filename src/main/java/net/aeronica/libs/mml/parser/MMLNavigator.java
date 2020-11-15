@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Paul Boese a.k.a. Aeronica
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.aeronica.libs.mml.parser;
 
 import net.aeronica.libs.mml.util.DataByteBuffer;
@@ -22,7 +45,7 @@ public class MMLNavigator
 
     public boolean hasNext()
     {
-        return this.elementIndex < this.elementBuffer.count;
+        return this.elementIndex < this.elementBuffer.getCount();
     }
 
     public void next()
@@ -43,29 +66,29 @@ public class MMLNavigator
      */
     public int position()
     {
-        return this.elementBuffer.position[this.elementIndex];
+        return this.elementBuffer.getPosition(this.elementIndex);
     }
 
     public int length()
     {
-        return this.elementBuffer.length[this.elementIndex];
+        return this.elementBuffer.getLength(this.elementIndex);
     }
 
     public byte type()
     {
-        return this.elementBuffer.type[this.elementIndex];
+        return this.elementBuffer.getType(this.elementIndex);
     }
 
     // Data extraction support methods
 
     public String asString()
     {
-        byte elementType = this.elementBuffer.type[this.elementIndex];
+        byte elementType = this.elementBuffer.getType(this.elementIndex);
         if (elementType == ElementTypes.MML_BEGIN)
         {
             try
             {
-                return new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
+                return new String(this.buffer.getData(), this.elementBuffer.getPosition(this.elementIndex), this.elementBuffer.getLength(this.elementIndex), StandardCharsets.US_ASCII.name());
             }
             catch (UnsupportedEncodingException e)
             {
@@ -81,14 +104,14 @@ public class MMLNavigator
      */
     public int asInt()
     {
-        byte numberType = this.elementBuffer.type[this.elementIndex];
+        byte numberType = this.elementBuffer.getType(this.elementIndex);
         if (numberType == ElementTypes.MML_NUMBER)
         {
             try
             {
-                String number = new String(this.buffer.data, this.elementBuffer.position[this.elementIndex], this.elementBuffer.length[this.elementIndex], StandardCharsets.US_ASCII.name());
+                String number = new String(this.buffer.getData(), this.elementBuffer.getPosition(this.elementIndex), this.elementBuffer.getLength(this.elementIndex), StandardCharsets.US_ASCII.name());
                 int length = number.length();
-                if (length >= 1 & length <= 5)
+                if (length >= 1 && length <= 5)
                     return Integer.parseInt(number);
             } catch (NumberFormatException | UnsupportedEncodingException e)
             {
@@ -105,7 +128,7 @@ public class MMLNavigator
     public char asChar()
     {
         if (ElementTypes.MML_NOTE == type())
-            return (char) this.buffer.data[this.elementBuffer.position[this.elementIndex]];
+            return (char) this.buffer.getByte(this.elementBuffer.getPosition(this.elementIndex));
         return 0;
     }
 
@@ -115,6 +138,6 @@ public class MMLNavigator
      */
     public char anyChar()
     {
-        return (char) this.buffer.data[this.elementBuffer.position[this.elementIndex]];
+        return (char) this.buffer.getByte(this.elementBuffer.getPosition(this.elementIndex));
     }
 }

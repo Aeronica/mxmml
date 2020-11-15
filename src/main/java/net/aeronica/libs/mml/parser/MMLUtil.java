@@ -1,6 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Paul Boese a.k.a. Aeronica
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.aeronica.libs.mml.parser;
-
-import net.aeronica.libs.mml.oldcore.ParserException;
 
 import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
@@ -10,9 +31,13 @@ import javax.sound.midi.Patch;
 public enum MMLUtil
 {
     ;
-    public static final int MAX_TRACKS = 10;
-
+    public static final double PPQ = 480.0;
+    public static final int MAX_TRACKS = 160;
+    // 8 players with 10 parts each = 80 parts.
+    // 12 slots with 10 parts each = 120 parts.
+    // No problem :D, but will make it 160 because we can!
     /* int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
+
     private static final int[] DOE_RE_MI = {50, 9, 11, 0, 2, 4, 5, 7};
 
     /**
@@ -20,7 +45,6 @@ public enum MMLUtil
      * @param rawNote US ASCII character value
      * @param mmlOctave in the range of 0-8
      * @return MIDI note
-     * @throws ParserException
      */
     public static int getMIDINote(char rawNote, int mmlOctave)
     {

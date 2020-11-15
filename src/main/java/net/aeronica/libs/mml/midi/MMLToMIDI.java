@@ -61,11 +61,14 @@ public class MMLToMIDI
             {
                 switch (mmo.getType())
                 {
-                    case SUSTAIN:
                     case INIT:
                     case REST:
                     case DONE:
                         addText(mmo, tracks, track, channel, ticksOffset);
+                        break;
+
+                    case SUSTAIN:
+                        setSustain(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case TEMPO:
@@ -155,56 +158,9 @@ public class MMLToMIDI
         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
     }
 
-//    private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
-//    {
-//        ShortMessage msg = new ShortMessage();
-//        msg.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    private MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
-//    {
-//        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    private MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
-//    {
-//        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-//    {
-//        ShortMessage msg = new ShortMessage();
-//        msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-//    {
-//        ShortMessage msg = new ShortMessage();
-//        msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    private MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
-//    {
-//        MetaMessage msg = new MetaMessage();
-//        byte[] data = ByteBuffer.allocate(4).putInt(1000000 * 60 / tempo).array();
-//        data[0] = data[1];
-//        data[1] = data[2];
-//        data[2] = data[3];
-//        msg.setMessage(0x51, data, 3);
-//        return new MidiEvent(msg, tick);
-//    }
-//
-//    @SuppressWarnings("unused")
-//    private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
-//    {
-//        MetaMessage msg = new MetaMessage();
-//        byte[] data = text != null ? text.getBytes(StandardCharsets.US_ASCII) : "".getBytes();
-//        msg.setMessage(0x01, data, data.length);
-//        return new MidiEvent(msg, tick);
-//    }
+    private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    {
+        int sustain = mmo.doSustain() ? 127 : 0;
+        tracks[track].add(createControlChangeEvent(channel, 64, sustain, mmo.getStartingTicks() + ticksOffset));
+    }
 }
