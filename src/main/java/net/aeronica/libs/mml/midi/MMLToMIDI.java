@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 import static net.aeronica.libs.mml.midi.MIDIHelper.*;
-import static net.aeronica.libs.mml.oldcore.MMLUtil.packedPreset2Patch;
-import static net.aeronica.libs.mml.oldcore.MMLUtil.smartClampMIDI;
+import static net.aeronica.libs.mml.parser.MMLUtil.packedPreset2Patch;
+import static net.aeronica.libs.mml.parser.MMLUtil.smartClampMIDI;
 
 public class MMLToMIDI
 {
