@@ -102,7 +102,8 @@ public class MMLParser
                 break;
                 case MML_END: doEnd(navigator);
                 break;
-                default: /* Because SonarCloud says I need a default: */
+                default:
+                    navigator.next();
             }
         } while (navigator.hasNext());
 
